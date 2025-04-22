@@ -1,19 +1,21 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { createServerSupabaseClient } from "@/lib/supabase"
-import { getSession } from "@/lib/auth"
 
 // GET - Obtener una firma por ID (verificando que pertenezca al usuario)
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const { user } = await getSession()
+    const supabase = createServerSupabaseClient()
+
+    // Obtener el usuario actual directamente de Supabase
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
 
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
     const id = params.id
-
-    const supabase = createServerSupabaseClient()
 
     const { data, error } = await supabase.from("signatures").select("*").eq("id", id).eq("user_id", user.id).single()
 
@@ -34,7 +36,12 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 // PUT - Actualizar una firma (verificando que pertenezca al usuario)
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const { user } = await getSession()
+    const supabase = createServerSupabaseClient()
+
+    // Obtener el usuario actual directamente de Supabase
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
 
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -47,8 +54,6 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     if (!name || !signature_data) {
       return NextResponse.json({ error: "Name and signature data are required" }, { status: 400 })
     }
-
-    const supabase = createServerSupabaseClient()
 
     // Primero verificamos que la firma pertenezca al usuario
     const { data: existingSignature, error: fetchError } = await supabase
@@ -99,15 +104,18 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 // DELETE - Eliminar una firma (verificando que pertenezca al usuario)
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const { user } = await getSession()
+    const supabase = createServerSupabaseClient()
+
+    // Obtener el usuario actual directamente de Supabase
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
 
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
     const id = params.id
-
-    const supabase = createServerSupabaseClient()
 
     // Primero verificamos que la firma pertenezca al usuario
     const { data: existingSignature, error: fetchError } = await supabase

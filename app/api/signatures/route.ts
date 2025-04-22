@@ -1,17 +1,19 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { createServerSupabaseClient } from "@/lib/supabase"
-import { getSession } from "@/lib/auth"
 
 // GET - Obtener todas las firmas del usuario actual
 export async function GET(request: NextRequest) {
   try {
-    const { user } = await getSession()
+    const supabase = createServerSupabaseClient()
+
+    // Obtener el usuario actual directamente de Supabase
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
 
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
-
-    const supabase = createServerSupabaseClient()
 
     const { data, error } = await supabase
       .from("signatures")
@@ -33,7 +35,12 @@ export async function GET(request: NextRequest) {
 // POST - Crear una nueva firma para el usuario actual
 export async function POST(request: NextRequest) {
   try {
-    const { user } = await getSession()
+    const supabase = createServerSupabaseClient()
+
+    // Obtener el usuario actual directamente de Supabase
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
 
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -45,8 +52,6 @@ export async function POST(request: NextRequest) {
     if (!name || !signature_data) {
       return NextResponse.json({ error: "Name and signature data are required" }, { status: 400 })
     }
-
-    const supabase = createServerSupabaseClient()
 
     const { data, error } = await supabase
       .from("signatures")

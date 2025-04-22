@@ -25,7 +25,7 @@ export type Database = {
   }
 }
 
-// Cliente para el servidor
+// Cliente para el servidor - sin usar cookies
 export const createServerSupabaseClient = () => {
   return createClient<Database>(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
 }

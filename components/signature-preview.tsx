@@ -1,9 +1,35 @@
 import type { SignatureData } from "@/components/signature-generator"
-import { Facebook, Instagram, Youtube, Linkedin, Twitter, Phone, Mail, Globe, MapPin } from "lucide-react"
+import { Facebook, Instagram, Youtube, Linkedin, Phone, Mail, Globe, MapPin } from "lucide-react"
 import { TemplateType, getTemplateById } from "@/lib/templates"
 
-export default function SignaturePreview({ data }: { data: SignatureData }) {
+// Componente personalizado para el icono de X (anteriormente Twitter)
+function XIcon({ size = 24, className = "" }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M6 4l12 16M4 4l12 6 4 10" />
+    </svg>
+  )
+}
+
+export default function SignaturePreview({ data, darkMode = false }: { data: SignatureData; darkMode?: boolean }) {
   const template = getTemplateById(data.templateId || TemplateType.CLASSIC)
+
+  // Colores adaptados al modo oscuro
+  const textColor = darkMode ? "text-gray-200" : "text-gray-800"
+  const mutedTextColor = darkMode ? "text-gray-400" : "text-gray-600"
+  const bgColor = darkMode ? "bg-gray-800" : "bg-white"
+  const borderColor = darkMode ? "border-gray-700" : "border-gray-200"
 
   // Filtrar redes sociales habilitadas
   const enabledSocialNetworks = Object.entries(data.socialLinks)
@@ -14,7 +40,7 @@ export default function SignaturePreview({ data }: { data: SignatureData }) {
   switch (data.templateId) {
     case TemplateType.MODERN:
       return (
-        <div className="border p-4 bg-white rounded-md max-w-full overflow-auto">
+        <div className={`border p-4 ${bgColor} ${borderColor} rounded-md max-w-full overflow-auto`}>
           <table cellPadding="0" cellSpacing="0" className="w-full">
             <tbody>
               <tr>
@@ -27,22 +53,22 @@ export default function SignaturePreview({ data }: { data: SignatureData }) {
                 </td>
                 <td className="align-top px-4 border-l-2 border-r-2" style={{ borderColor: data.primaryColor }}>
                   <div className="flex flex-col space-y-2">
-                    <h3 className="text-xl font-bold text-gray-800">{data.name}</h3>
+                    <h3 className={`text-xl font-bold ${textColor}`}>{data.name}</h3>
                     <p className="text-sm font-semibold" style={{ color: data.primaryColor }}>
                       {data.position}
                     </p>
 
-                    <div className="pt-2 text-sm text-gray-600 flex items-start gap-2">
+                    <div className={`pt-2 text-sm ${mutedTextColor} flex items-start gap-2`}>
                       <MapPin size={16} className="shrink-0 mt-0.5" />
                       <span>{data.address}</span>
                     </div>
 
-                    <div className="text-sm text-gray-600 flex items-center gap-2">
+                    <div className={`text-sm ${mutedTextColor} flex items-center gap-2`}>
                       <Phone size={16} className="shrink-0" />
                       <span>{data.phone}</span>
                     </div>
 
-                    <div className="text-sm text-gray-600 flex items-center gap-2">
+                    <div className={`text-sm ${mutedTextColor} flex items-center gap-2`}>
                       <Mail size={16} className="shrink-0" />
                       <span>{data.email}</span>
                     </div>
@@ -70,7 +96,7 @@ export default function SignaturePreview({ data }: { data: SignatureData }) {
                               Icon = Linkedin
                               break
                             case "twitter":
-                              Icon = Twitter
+                              Icon = XIcon
                               break
                             default:
                               return null
@@ -81,7 +107,7 @@ export default function SignaturePreview({ data }: { data: SignatureData }) {
                               href={url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-gray-600 hover:text-gray-900"
+                              className={`${mutedTextColor} hover:${textColor}`}
                             >
                               <Icon size={20} />
                             </a>
@@ -111,7 +137,7 @@ export default function SignaturePreview({ data }: { data: SignatureData }) {
 
     case TemplateType.MINIMAL:
       return (
-        <div className="border p-4 bg-white rounded-md max-w-full overflow-auto">
+        <div className={`border p-4 ${bgColor} ${borderColor} rounded-md max-w-full overflow-auto`}>
           <table cellPadding="0" cellSpacing="0" className="w-full">
             <tbody>
               <tr>
@@ -124,17 +150,18 @@ export default function SignaturePreview({ data }: { data: SignatureData }) {
                 </td>
                 <td className="align-top">
                   <div className="flex flex-col space-y-2">
-                    <h3 className="text-lg font-bold text-gray-800">{data.name}</h3>
+                    <h3 className={`text-lg font-bold ${textColor}`}>{data.name}</h3>
                     <p className="text-sm" style={{ color: data.primaryColor }}>
                       {data.position}
                     </p>
 
-                    <div className="flex items-center gap-4 text-sm text-gray-600 pt-1">
-                      <div className="flex items-center gap-1">
+                    {/* Cambiado a columna en lugar de fila */}
+                    <div className="flex flex-col space-y-1 text-sm pt-1">
+                      <div className={`flex items-center gap-1 ${mutedTextColor}`}>
                         <Phone size={14} className="shrink-0" />
                         <span>{data.phone}</span>
                       </div>
-                      <div className="flex items-center gap-1">
+                      <div className={`flex items-center gap-1 ${mutedTextColor}`}>
                         <Mail size={14} className="shrink-0" />
                         <span>{data.email}</span>
                       </div>
@@ -162,7 +189,7 @@ export default function SignaturePreview({ data }: { data: SignatureData }) {
                               Icon = Linkedin
                               break
                             case "twitter":
-                              Icon = Twitter
+                              Icon = XIcon
                               break
                             default:
                               return null
@@ -173,7 +200,7 @@ export default function SignaturePreview({ data }: { data: SignatureData }) {
                               href={url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-gray-600 hover:text-gray-900"
+                              className={`${mutedTextColor} hover:${textColor}`}
                             >
                               <Icon size={16} />
                             </a>
@@ -191,7 +218,7 @@ export default function SignaturePreview({ data }: { data: SignatureData }) {
 
     case TemplateType.CORPORATE:
       return (
-        <div className="border p-4 bg-white rounded-md max-w-full overflow-auto">
+        <div className={`border p-4 ${bgColor} ${borderColor} rounded-md max-w-full overflow-auto`}>
           <table
             cellPadding="0"
             cellSpacing="0"
@@ -218,23 +245,23 @@ export default function SignaturePreview({ data }: { data: SignatureData }) {
                 </td>
                 <td className="align-top p-4">
                   <div className="flex flex-col space-y-2">
-                    <h3 className="text-xl font-bold text-gray-800">{data.name}</h3>
+                    <h3 className={`text-xl font-bold ${textColor}`}>{data.name}</h3>
                     <p className="text-sm font-semibold" style={{ color: data.primaryColor }}>
                       {data.position}
                     </p>
                     <div className="w-12 h-0.5 mb-1" style={{ backgroundColor: data.primaryColor }}></div>
 
-                    <div className="text-sm text-gray-600">
+                    <div className={`text-sm ${mutedTextColor}`}>
                       <div className="font-medium">{data.company}</div>
                       <div>{data.address}</div>
                     </div>
 
-                    <div className="text-sm text-gray-600 flex items-center gap-2">
+                    <div className={`text-sm ${mutedTextColor} flex items-center gap-2`}>
                       <Phone size={16} className="shrink-0" />
                       <span>{data.phone}</span>
                     </div>
 
-                    <div className="text-sm text-gray-600 flex items-center gap-2">
+                    <div className={`text-sm ${mutedTextColor} flex items-center gap-2`}>
                       <Mail size={16} className="shrink-0" />
                       <span>{data.email}</span>
                     </div>
@@ -262,7 +289,7 @@ export default function SignaturePreview({ data }: { data: SignatureData }) {
                               Icon = Linkedin
                               break
                             case "twitter":
-                              Icon = Twitter
+                              Icon = XIcon
                               break
                             default:
                               return null
@@ -273,7 +300,7 @@ export default function SignaturePreview({ data }: { data: SignatureData }) {
                               href={url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-gray-600 hover:text-gray-900"
+                              className={`${mutedTextColor} hover:${textColor}`}
                             >
                               <Icon size={20} />
                             </a>
@@ -291,7 +318,7 @@ export default function SignaturePreview({ data }: { data: SignatureData }) {
 
     default: // CLASSIC
       return (
-        <div className="border p-4 bg-white rounded-md max-w-full overflow-auto">
+        <div className={`border p-4 ${bgColor} ${borderColor} rounded-md max-w-full overflow-auto`}>
           <table cellPadding="0" cellSpacing="0" className="w-full">
             <tbody>
               <tr>
@@ -316,7 +343,7 @@ export default function SignaturePreview({ data }: { data: SignatureData }) {
                 </td>
                 <td className="align-top pl-4 border-l-2" style={{ borderColor: data.primaryColor }}>
                   <div className="flex flex-col space-y-2">
-                    <h3 className="text-xl font-bold text-gray-800">{data.name}</h3>
+                    <h3 className={`text-xl font-bold ${textColor}`}>{data.name}</h3>
                     <p
                       className="text-sm font-semibold uppercase pb-1 border-b-2"
                       style={{
@@ -327,17 +354,17 @@ export default function SignaturePreview({ data }: { data: SignatureData }) {
                       {data.position}
                     </p>
 
-                    <div className="pt-2 text-sm text-gray-600 flex items-start gap-2">
+                    <div className={`pt-2 text-sm ${mutedTextColor} flex items-start gap-2`}>
                       <MapPin size={16} className="shrink-0 mt-0.5" />
                       <span>{data.address}</span>
                     </div>
 
-                    <div className="text-sm text-gray-600 flex items-center gap-2">
+                    <div className={`text-sm ${mutedTextColor} flex items-center gap-2`}>
                       <Phone size={16} className="shrink-0" />
                       <span>{data.phone}</span>
                     </div>
 
-                    <div className="text-sm text-gray-600 flex items-center gap-2">
+                    <div className={`text-sm ${mutedTextColor} flex items-center gap-2`}>
                       <Mail size={16} className="shrink-0" />
                       <span>{data.email}</span>
                     </div>
@@ -365,7 +392,7 @@ export default function SignaturePreview({ data }: { data: SignatureData }) {
                               Icon = Linkedin
                               break
                             case "twitter":
-                              Icon = Twitter
+                              Icon = XIcon
                               break
                             default:
                               return null
@@ -376,7 +403,7 @@ export default function SignaturePreview({ data }: { data: SignatureData }) {
                               href={url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-gray-600 hover:text-gray-900"
+                              className={`${mutedTextColor} hover:${textColor}`}
                             >
                               <Icon size={20} />
                             </a>

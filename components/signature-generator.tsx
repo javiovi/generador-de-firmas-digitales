@@ -13,7 +13,6 @@ import {
   Instagram,
   Youtube,
   Linkedin,
-  Twitter,
   Copy,
   Download,
   Check,
@@ -23,8 +22,9 @@ import {
   Trash2,
   Edit,
   Loader2,
+  Sun,
+  Moon,
 } from "lucide-react"
-import SignaturePreview from "@/components/signature-preview"
 import ColorPicker from "@/components/color-picker"
 import { useSignatures } from "@/hooks/use-signatures"
 import { uploadFile } from "@/lib/upload-service"
@@ -53,6 +53,13 @@ import type { SignatureRecord } from "@/lib/supabase"
 import { TemplateType, TEMPLATES, getTemplateById, getDefaultSignatureData } from "@/lib/templates"
 import TemplateSelector from "@/components/template-selector"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Switch } from "@/components/ui/switch"
+
+// Importar los nuevos componentes
+import SignaturePreviewWrapper from "@/components/signature-preview-wrapper"
+import ExportToImage from "@/components/export-to-image"
+import EmailClientGuides from "@/components/email-client-guides"
+import CollaborationFeatures from "@/components/collaboration-features"
 
 export type SocialLink = {
   url: string
@@ -81,10 +88,31 @@ export type SignatureData = {
   templateConfig: Record<string, any>
 }
 
+// Componente personalizado para el icono de X (anteriormente Twitter)
+function XIcon({ size = 24, className = "" }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M6 4l12 16M4 4l12 6 4 10" />
+    </svg>
+  )
+}
+
 export default function SignatureGenerator() {
   const [signatureData, setSignatureData] = useState<SignatureData>(getDefaultSignatureData(TemplateType.CLASSIC))
   const [copied, setCopied] = useState(false)
   const [activeTab, setActiveTab] = useState("editor")
+  const [exportTab, setExportTab] = useState("html")
   const htmlCodeRef = useRef<HTMLTextAreaElement>(null)
   const [saveDialogOpen, setSaveDialogOpen] = useState(false)
   const [loadDialogOpen, setLoadDialogOpen] = useState(false)
@@ -93,6 +121,7 @@ export default function SignatureGenerator() {
   const [currentSignatureId, setCurrentSignatureId] = useState<string | null>(null)
   const [isUploading, setIsUploading] = useState(false)
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateType>(TemplateType.CLASSIC)
+  const [isResponsive, setIsResponsive] = useState(true)
 
   const {
     isLoading,
@@ -403,13 +432,49 @@ export default function SignatureGenerator() {
   }
 
   // Generar el código HTML para la firma según la plantilla seleccionada
-  const generateHtmlCode = () => {
+  const generateHtmlCode = (darkMode = false) => {
     const template = getTemplateById(signatureData.templateId)
+
+    // Colores adaptados al modo oscuro
+    const textColor = darkMode ? "#e5e7eb" : "#333333"
+    const mutedTextColor = darkMode ? "#9ca3af" : "#666666"
+    const bgColor = darkMode ? "#1f2937" : "#ffffff"
+    const borderColor = darkMode ? "#374151" : "#e5e7eb"
 
     // Filtrar redes sociales habilitadas
     const enabledSocialNetworks = Object.entries(signatureData.socialLinks)
       .filter(([_, data]) => data.enabled)
       .map(([network, data]) => ({ network, url: data.url }))
+
+    // Estilos responsivos para el encabezado
+    const responsiveStyles = isResponsive
+      ? `
+        @media screen and (max-width: 600px) {
+          table.signature-table {
+            width: 100% !important;
+          }
+          td.signature-photo, td.signature-logo {
+            display: block !important;
+            width: 100% !important;
+            text-align: center !important;
+          }
+          td.signature-content {
+            display: block !important;
+            width: 100% !important;
+            padding-left: 0 !important;
+            padding-top: 15px !important;
+            border-left: none !important;
+            border-top: 3px solid ${signatureData.primaryColor} !important;
+          }
+          img.signature-profile-image {
+            margin: 0 auto !important;
+          }
+          .signature-social-icons {
+            text-align: center !important;
+          }
+        }
+      `
+      : ""
 
     // Generar HTML según la plantilla
     let socialHtml = ""
@@ -464,12 +529,16 @@ export default function SignatureGenerator() {
 <html>
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Email Signature</title>
+  <style>
+    ${responsiveStyles}
+  </style>
 </head>
 <body>
-  <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
+  <table cellpadding="0" cellspacing="0" border="0" class="signature-table" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
     <tr>
-      <td style="padding-right: 15px; vertical-align: top;">
+      <td class="signature-logo" style="padding-right: 15px; vertical-align: top;">
         <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
           <tr>
             <td style="padding: 0 0 10px 0; text-align: center;">
@@ -478,16 +547,16 @@ export default function SignatureGenerator() {
           </tr>
           <tr>
             <td style="padding: 0; text-align: center;">
-              <img src="${signatureData.photoUrl}" alt="${signatureData.name}" width="150" height="150" style="width: 150px; height: 150px; max-width: 150px; border-radius: 75px; display: block;">
+              <img src="${signatureData.photoUrl}" alt="${signatureData.name}" width="150" height="150" class="signature-profile-image" style="width: 150px; height: 150px; max-width: 150px; border-radius: 75px; display: block;">
             </td>
           </tr>
         </table>
       </td>
-      <td style="padding-left: 15px; border-left: 3px solid ${signatureData.primaryColor}; vertical-align: top;">
+      <td class="signature-content" style="padding-left: 15px; border-left: 3px solid ${signatureData.primaryColor}; vertical-align: top;">
         <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
           <tr>
             <td style="padding: 0 0 5px 0;">
-              <div style="font-family: Arial, sans-serif; font-size: 18px; font-weight: bold; color: #333; margin: 0;">${signatureData.name}</div>
+              <div style="font-family: Arial, sans-serif; font-size: 18px; font-weight: bold; color: ${textColor}; margin: 0;">${signatureData.name}</div>
             </td>
           </tr>
           <tr>
@@ -498,7 +567,7 @@ export default function SignatureGenerator() {
           </tr>
           <tr>
             <td style="padding: 0 0 10px 0;">
-              <div style="font-family: Arial, sans-serif; font-size: 12px; color: #333; margin: 0;">${signatureData.address}</div>
+              <div style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor}; margin: 0;">${signatureData.address}</div>
             </td>
           </tr>
           <tr>
@@ -508,8 +577,8 @@ export default function SignatureGenerator() {
                   <td width="20" style="vertical-align: top; padding-right: 5px;">
                     <img src="https://cdn-icons-png.flaticon.com/512/134/134937.png" width="16" height="16" alt="Phone" style="border: none; display: block; outline: none;">
                   </td>
-                  <td style="font-family: Arial, sans-serif; font-size: 12px; color: #333;">
-                    <a href="tel:${signatureData.phone}" style="color: #333; text-decoration: none;">${signatureData.phone}</a>
+                  <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor};">
+                    <a href="tel:${signatureData.phone}" style="color: ${textColor}; text-decoration: none;">${signatureData.phone}</a>
                   </td>
                 </tr>
               </table>
@@ -522,8 +591,8 @@ export default function SignatureGenerator() {
                   <td width="20" style="vertical-align: top; padding-right: 5px;">
                     <img src="https://cdn-icons-png.flaticon.com/512/561/561127.png" width="16" height="16" alt="Email" style="border: none; display: block; outline: none;">
                   </td>
-                  <td style="font-family: Arial, sans-serif; font-size: 12px; color: #333;">
-                    <a href="mailto:${signatureData.email}" style="color: #333; text-decoration: none;">${signatureData.email}</a>
+                  <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor};">
+                    <a href="mailto:${signatureData.email}" style="color: ${textColor}; text-decoration: none;">${signatureData.email}</a>
                   </td>
                 </tr>
               </table>
@@ -543,7 +612,11 @@ export default function SignatureGenerator() {
               </table>
             </td>
           </tr>
-          ${socialHtml}
+          <tr>
+            <td class="signature-social-icons">
+              ${socialHtml}
+            </td>
+          </tr>
         </table>
       </td>
     </tr>
@@ -557,12 +630,16 @@ export default function SignatureGenerator() {
 <html>
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Email Signature</title>
+  <style>
+    ${responsiveStyles}
+  </style>
 </head>
 <body>
-  <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
+  <table cellpadding="0" cellspacing="0" border="0" class="signature-table" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
     <tr>
-      <td style="padding-right: 15px; vertical-align: top;">
+      <td class="signature-logo" style="padding-right: 15px; vertical-align: top;">
         <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
           <tr>
             <td style="padding: 0 0 10px 0;">
@@ -571,11 +648,11 @@ export default function SignatureGenerator() {
           </tr>
         </table>
       </td>
-      <td style="padding: 0 15px; border-left: 2px solid ${signatureData.primaryColor}; border-right: 2px solid ${signatureData.primaryColor}; vertical-align: top;">
+      <td class="signature-content" style="padding: 0 15px; border-left: 2px solid ${signatureData.primaryColor}; border-right: 2px solid ${signatureData.primaryColor}; vertical-align: top;">
         <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
           <tr>
             <td style="padding: 0 0 5px 0;">
-              <div style="font-family: Arial, sans-serif; font-size: 18px; font-weight: bold; color: #333; margin: 0;">${signatureData.name}</div>
+              <div style="font-family: Arial, sans-serif; font-size: 18px; font-weight: bold; color: ${textColor}; margin: 0;">${signatureData.name}</div>
             </td>
           </tr>
           <tr>
@@ -585,7 +662,7 @@ export default function SignatureGenerator() {
           </tr>
           <tr>
             <td style="padding: 0 0 10px 0;">
-              <div style="font-family: Arial, sans-serif; font-size: 12px; color: #333; margin: 0;">${signatureData.address}</div>
+              <div style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor}; margin: 0;">${signatureData.address}</div>
             </td>
           </tr>
           <tr>
@@ -595,8 +672,8 @@ export default function SignatureGenerator() {
                   <td width="20" style="vertical-align: top; padding-right: 5px;">
                     <img src="https://cdn-icons-png.flaticon.com/512/134/134937.png" width="16" height="16" alt="Phone" style="border: none; display: block; outline: none;">
                   </td>
-                  <td style="font-family: Arial, sans-serif; font-size: 12px; color: #333;">
-                    <a href="tel:${signatureData.phone}" style="color: #333; text-decoration: none;">${signatureData.phone}</a>
+                  <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor};">
+                    <a href="tel:${signatureData.phone}" style="color: ${textColor}; text-decoration: none;">${signatureData.phone}</a>
                   </td>
                 </tr>
               </table>
@@ -607,10 +684,10 @@ export default function SignatureGenerator() {
               <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
                 <tr>
                   <td width="20" style="vertical-align: top; padding-right: 5px;">
-                    <img src="https://cdn-icons-png.flaticon.com/512/561/561127.png" width="16" height="16" alt="Email" style="border  width="16" height="16" alt="Email" style="border: none; display: block; outline: none;">
+                    <img src="https://cdn-icons-png.flaticon.com/512/561/561127.png" width="16" height="16" alt="Email" style="border: none; display: block; outline: none;">
                   </td>
-                  <td style="font-family: Arial, sans-serif; font-size: 12px; color: #333;">
-                    <a href="mailto:${signatureData.email}" style="color: #333; text-decoration: none;">${signatureData.email}</a>
+                  <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor};">
+                    <a href="mailto:${signatureData.email}" style="color: ${textColor}; text-decoration: none;">${signatureData.email}</a>
                   </td>
                 </tr>
               </table>
@@ -630,11 +707,15 @@ export default function SignatureGenerator() {
               </table>
             </td>
           </tr>
-          ${socialHtml}
+          <tr>
+            <td class="signature-social-icons">
+              ${socialHtml}
+            </td>
+          </tr>
         </table>
       </td>
-      <td style="padding-left: 15px; vertical-align: top;">
-        <img src="${signatureData.photoUrl}" alt="${signatureData.name}" width="120" height="120" style="width: 120px; height: 120px; max-width: 120px; border-radius: 60px; border: 2px solid ${signatureData.primaryColor}; display: block;">
+      <td class="signature-photo" style="padding-left: 15px; vertical-align: top;">
+        <img src="${signatureData.photoUrl}" alt="${signatureData.name}" width="120" height="120" class="signature-profile-image" style="width: 120px; height: 120px; max-width: 120px; border-radius: 60px; border: 2px solid ${signatureData.primaryColor}; display: block;">
       </td>
     </tr>
   </table>
@@ -647,19 +728,29 @@ export default function SignatureGenerator() {
 <html>
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Email Signature</title>
+  <style>
+    ${responsiveStyles}
+    @media screen and (max-width: 600px) {
+      .minimal-contact {
+        display: block !important;
+        margin-bottom: 5px !important;
+      }
+    }
+  </style>
 </head>
 <body>
-  <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
+  <table cellpadding="0" cellspacing="0" border="0" class="signature-table" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
     <tr>
-      <td style="padding-right: 15px; vertical-align: top;">
+      <td class="signature-logo" style="padding-right: 15px; vertical-align: top;">
         <img src="${signatureData.logoUrl}" alt="${signatureData.company}" width="100" style="width: 100px; max-width: 100px; display: block;">
       </td>
-      <td style="vertical-align: top;">
+      <td class="signature-content" style="vertical-align: top;">
         <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
           <tr>
             <td style="padding: 0 0 5px 0;">
-              <div style="font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; color: #333; margin: 0;">${signatureData.name}</div>
+              <div style="font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; color: ${textColor}; margin: 0;">${signatureData.name}</div>
             </td>
           </tr>
           <tr>
@@ -669,26 +760,24 @@ export default function SignatureGenerator() {
           </tr>
           <tr>
             <td style="padding: 0 0 5px 0;">
-              <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
-                <tr>
-                  <td style="font-family: Arial, sans-serif; font-size: 12px; color: #333; padding-right: 10px;">
-                    <a href="tel:${signatureData.phone}" style="color: #333; text-decoration: none;">${signatureData.phone}</a>
-                  </td>
-                  <td style="font-family: Arial, sans-serif; font-size: 12px; color: #333; padding-right: 10px;">
-                    <a href="mailto:${signatureData.email}" style="color: #333; text-decoration: none;">${signatureData.email}</a>
-                  </td>
-                  <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${signatureData.primaryColor};">
-                    <a href="https://${signatureData.website}" style="color: ${signatureData.primaryColor}; text-decoration: none;">${signatureData.website}</a>
-                  </td>
-                </tr>
-              </table>
+              <div style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor}; margin: 0;">
+                <span class="minimal-contact" style="display: inline-block; margin-right: 10px;">
+                  <a href="tel:${signatureData.phone}" style="color: ${textColor}; text-decoration: none;">${signatureData.phone}</a>
+                </span>
+                <span class="minimal-contact" style="display: inline-block; margin-right: 10px;">
+                  <a href="mailto:${signatureData.email}" style="color: ${textColor}; text-decoration: none;">${signatureData.email}</a>
+                </span>
+                <span class="minimal-contact" style="display: inline-block;">
+                  <a href="https://${signatureData.website}" style="color: ${signatureData.primaryColor}; text-decoration: none;">${signatureData.website}</a>
+                </span>
+              </div>
             </td>
           </tr>
           ${
             enabledSocialNetworks.length > 0
               ? `
           <tr>
-            <td style="padding: 5px 0 0 0;">
+            <td class="signature-social-icons" style="padding: 5px 0 0 0;">
               <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
                 <tr>
                   ${enabledSocialNetworks
@@ -740,24 +829,38 @@ export default function SignatureGenerator() {
 <html>
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Email Signature</title>
+  <style>
+    ${responsiveStyles}
+    @media screen and (max-width: 600px) {
+      .corporate-header {
+        display: block !important;
+        width: 100% !important;
+      }
+      .corporate-content {
+        display: block !important;
+        width: 100% !important;
+      }
+    }
+  </style>
 </head>
 <body>
-  <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0; ${template.showBorder ? `border: 1px solid ${signatureData.primaryColor};` : ""} width: 500px;">
+  <table cellpadding="0" cellspacing="0" border="0" class="signature-table" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0; ${template.showBorder ? `border: 1px solid ${signatureData.primaryColor};` : ""} width: 500px;">
     <tr>
-      <td style="padding: 10px; text-align: center; background-color: ${signatureData.primaryColor}; color: white;" colspan="2">
+      <td class="corporate-header" style="padding: 10px; text-align: center; background-color: ${signatureData.primaryColor}; color: white;" colspan="2">
         <img src="${signatureData.logoUrl}" alt="${signatureData.company}" width="180" style="width: 180px; max-width: 180px; display: inline-block;">
       </td>
     </tr>
     <tr>
-      <td style="padding: 15px; vertical-align: top; width: 150px;">
-        <img src="${signatureData.photoUrl}" alt="${signatureData.name}" width="150" height="150" style="width: 150px; height: 150px; max-width: 150px; display: block;">
+      <td class="signature-photo corporate-content" style="padding: 15px; vertical-align: top; width: 150px;">
+        <img src="${signatureData.photoUrl}" alt="${signatureData.name}" width="150" height="150" class="signature-profile-image" style="width: 150px; height: 150px; max-width: 150px; display: block;">
       </td>
-      <td style="padding: 15px; vertical-align: top;">
+      <td class="signature-content corporate-content" style="padding: 15px; vertical-align: top;">
         <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0; width: 100%;">
           <tr>
             <td style="padding: 0 0 5px 0;">
-              <div style="font-family: Arial, sans-serif; font-size: 18px; font-weight: bold; color: #333; margin: 0;">${signatureData.name}</div>
+              <div style="font-family: Arial, sans-serif; font-size: 18px; font-weight: bold; color: ${textColor}; margin: 0;">${signatureData.name}</div>
             </td>
           </tr>
           <tr>
@@ -768,8 +871,8 @@ export default function SignatureGenerator() {
           </tr>
           <tr>
             <td style="padding: 0 0 10px 0;">
-              <div style="font-family: Arial, sans-serif; font-size: 12px; color: #333; margin: 0;">${signatureData.company}</div>
-              <div style="font-family: Arial, sans-serif; font-size: 12px; color: #333; margin: 0;">${signatureData.address}</div>
+              <div style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor}; margin: 0;">${signatureData.company}</div>
+              <div style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor}; margin: 0;">${signatureData.address}</div>
             </td>
           </tr>
           <tr>
@@ -779,8 +882,8 @@ export default function SignatureGenerator() {
                   <td width="20" style="vertical-align: top; padding-right: 5px;">
                     <img src="https://cdn-icons-png.flaticon.com/512/134/134937.png" width="16" height="16" alt="Phone" style="border: none; display: block; outline: none;">
                   </td>
-                  <td style="font-family: Arial, sans-serif; font-size: 12px; color: #333;">
-                    <a href="tel:${signatureData.phone}" style="color: #333; text-decoration: none;">${signatureData.phone}</a>
+                  <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor};">
+                    <a href="tel:${signatureData.phone}" style="color: ${textColor}; text-decoration: none;">${signatureData.phone}</a>
                   </td>
                 </tr>
               </table>
@@ -793,8 +896,8 @@ export default function SignatureGenerator() {
                   <td width="20" style="vertical-align: top; padding-right: 5px;">
                     <img src="https://cdn-icons-png.flaticon.com/512/561/561127.png" width="16" height="16" alt="Email" style="border: none; display: block; outline: none;">
                   </td>
-                  <td style="font-family: Arial, sans-serif; font-size: 12px; color: #333;">
-                    <a href="mailto:${signatureData.email}" style="color: #333; text-decoration: none;">${signatureData.email}</a>
+                  <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor};">
+                    <a href="mailto:${signatureData.email}" style="color: ${textColor}; text-decoration: none;">${signatureData.email}</a>
                   </td>
                 </tr>
               </table>
@@ -814,7 +917,11 @@ export default function SignatureGenerator() {
               </table>
             </td>
           </tr>
-          ${socialHtml}
+          <tr>
+            <td class="signature-social-icons">
+              ${socialHtml}
+            </td>
+          </tr>
         </table>
       </td>
     </tr>
@@ -828,12 +935,16 @@ export default function SignatureGenerator() {
 <html>
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Email Signature</title>
+  <style>
+    ${responsiveStyles}
+  </style>
 </head>
 <body>
-  <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
+  <table cellpadding="0" cellspacing="0" border="0" class="signature-table" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
     <tr>
-      <td style="padding-right: 15px; vertical-align: top;">
+      <td class="signature-logo" style="padding-right: 15px; vertical-align: top;">
         <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
           <tr>
             <td style="padding: 0 0 10px 0; text-align: center;">
@@ -842,16 +953,16 @@ export default function SignatureGenerator() {
           </tr>
           <tr>
             <td style="padding: 0; text-align: center;">
-              <img src="${signatureData.photoUrl}" alt="${signatureData.name}" width="150" height="150" style="width: 150px; height: 150px; max-width: 150px; border-radius: 75px; display: block;">
+              <img src="${signatureData.photoUrl}" alt="${signatureData.name}" width="150" height="150" class="signature-profile-image" style="width: 150px; height: 150px; max-width: 150px; border-radius: 75px; display: block;">
             </td>
           </tr>
         </table>
       </td>
-      <td style="padding-left: 15px; border-left: 3px solid ${signatureData.primaryColor}; vertical-align: top;">
+      <td class="signature-content" style="padding-left: 15px; border-left: 3px solid ${signatureData.primaryColor}; vertical-align: top;">
         <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
           <tr>
             <td style="padding: 0 0 5px 0;">
-              <div style="font-family: Arial, sans-serif; font-size: 18px; font-weight: bold; color: #333; margin: 0;">${signatureData.name}</div>
+              <div style="font-family: Arial, sans-serif; font-size: 18px; font-weight: bold; color: ${textColor}; margin: 0;">${signatureData.name}</div>
             </td>
           </tr>
           <tr>
@@ -862,7 +973,7 @@ export default function SignatureGenerator() {
           </tr>
           <tr>
             <td style="padding: 0 0 10px 0;">
-              <div style="font-family: Arial, sans-serif; font-size: 12px; color: #333; margin: 0;">${signatureData.address}</div>
+              <div style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor}; margin: 0;">${signatureData.address}</div>
             </td>
           </tr>
           <tr>
@@ -872,8 +983,8 @@ export default function SignatureGenerator() {
                   <td width="20" style="vertical-align: top; padding-right: 5px;">
                     <img src="https://cdn-icons-png.flaticon.com/512/134/134937.png" width="16" height="16" alt="Phone" style="border: none; display: block; outline: none;">
                   </td>
-                  <td style="font-family: Arial, sans-serif; font-size: 12px; color: #333;">
-                    <a href="tel:${signatureData.phone}" style="color: #333; text-decoration: none;">${signatureData.phone}</a>
+                  <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor};">
+                    <a href="tel:${signatureData.phone}" style="color: ${textColor}; text-decoration: none;">${signatureData.phone}</a>
                   </td>
                 </tr>
               </table>
@@ -886,8 +997,8 @@ export default function SignatureGenerator() {
                   <td width="20" style="vertical-align: top; padding-right: 5px;">
                     <img src="https://cdn-icons-png.flaticon.com/512/561/561127.png" width="16" height="16" alt="Email" style="border: none; display: block; outline: none;">
                   </td>
-                  <td style="font-family: Arial, sans-serif; font-size: 12px; color: #333;">
-                    <a href="mailto:${signatureData.email}" style="color: #333; text-decoration: none;">${signatureData.email}</a>
+                  <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor};">
+                    <a href="mailto:${signatureData.email}" style="color: ${textColor}; text-decoration: none;">${signatureData.email}</a>
                   </td>
                 </tr>
               </table>
@@ -907,7 +1018,11 @@ export default function SignatureGenerator() {
               </table>
             </td>
           </tr>
-          ${socialHtml}
+          <tr>
+            <td class="signature-social-icons">
+              ${socialHtml}
+            </td>
+          </tr>
         </table>
       </td>
     </tr>
@@ -1054,11 +1169,12 @@ export default function SignatureGenerator() {
           </div>
         </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="template">Plantilla</TabsTrigger>
             <TabsTrigger value="editor">Editor</TabsTrigger>
-            <TabsTrigger value="code">Código HTML</TabsTrigger>
+            <TabsTrigger value="code">Exportar</TabsTrigger>
+            <TabsTrigger value="collaboration">Colaboración</TabsTrigger>
           </TabsList>
 
           <TabsContent value="template" className="space-y-6">
@@ -1231,7 +1347,7 @@ export default function SignatureGenerator() {
                           onCheckedChange={() => handleSocialToggle("twitter")}
                         />
                         <Label htmlFor="twitter-enabled" className="flex items-center gap-2">
-                          <Twitter size={16} /> Twitter
+                          <XIcon size={16} /> X (Twitter)
                         </Label>
                       </div>
                       {signatureData.socialLinks.twitter.enabled && (
@@ -1305,35 +1421,102 @@ export default function SignatureGenerator() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="code">
+          <TabsContent value="code" className="space-y-6">
             <Card>
               <CardContent className="pt-6">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-semibold">Código HTML</h2>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={copyHtmlToClipboard}
-                      className="flex items-center gap-1"
-                    >
-                      {copied ? <Check size={16} /> : <Copy size={16} />}
-                      {copied ? "Copiado" : "Copiar"}
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={downloadHtmlFile} className="flex items-center gap-1">
-                      <Download size={16} />
-                      Descargar
-                    </Button>
-                  </div>
-                </div>
-                <textarea
-                  ref={htmlCodeRef}
-                  className="w-full h-[400px] p-4 font-mono text-sm border rounded-md"
-                  readOnly
-                  value={generateHtmlCode()}
-                />
+                <Tabs value={exportTab} onValueChange={setExportTab}>
+                  <TabsList className="grid w-full grid-cols-3 mb-4">
+                    <TabsTrigger value="html">Código HTML</TabsTrigger>
+                    <TabsTrigger value="image">Imagen</TabsTrigger>
+                    <TabsTrigger value="guides">Guías</TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="html" className="space-y-4">
+                    <div className="flex justify-between items-center mb-4">
+                      <h2 className="text-xl font-semibold">Código HTML</h2>
+                      <div className="flex flex-wrap gap-2">
+                        <div className="flex items-center space-x-2 mr-2">
+                          <Switch id="responsive-mode" checked={isResponsive} onCheckedChange={setIsResponsive} />
+                          <Label htmlFor="responsive-mode">Responsivo</Label>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            if (htmlCodeRef.current) {
+                              htmlCodeRef.current.value = generateHtmlCode(false)
+                            }
+                          }}
+                          className="flex items-center gap-1"
+                        >
+                          <Sun size={16} />
+                          Modo Claro
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            if (htmlCodeRef.current) {
+                              htmlCodeRef.current.value = generateHtmlCode(true)
+                            }
+                          }}
+                          className="flex items-center gap-1"
+                        >
+                          <Moon size={16} />
+                          Modo Oscuro
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={copyHtmlToClipboard}
+                          className="flex items-center gap-1"
+                        >
+                          {copied ? <Check size={16} /> : <Copy size={16} />}
+                          {copied ? "Copiado" : "Copiar"}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={downloadHtmlFile}
+                          className="flex items-center gap-1"
+                        >
+                          <Download size={16} />
+                          Descargar
+                        </Button>
+                      </div>
+                    </div>
+                    <textarea
+                      ref={htmlCodeRef}
+                      className="w-full h-[400px] p-4 font-mono text-sm border rounded-md"
+                      readOnly
+                      value={generateHtmlCode()}
+                    />
+                  </TabsContent>
+
+                  <TabsContent value="image" className="space-y-4">
+                    <h2 className="text-xl font-semibold mb-4">Exportar como Imagen</h2>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Exporta tu firma como imagen para usarla en clientes de correo que no soportan HTML o para
+                      compartirla en redes sociales.
+                    </p>
+                    <ExportToImage signatureData={signatureData} />
+                  </TabsContent>
+
+                  <TabsContent value="guides" className="space-y-4">
+                    <EmailClientGuides htmlCode={generateHtmlCode()} />
+                  </TabsContent>
+                </Tabs>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="collaboration" className="space-y-6">
+            <CollaborationFeatures
+              signatureData={signatureData}
+              signatureId={currentSignatureId || undefined}
+              signatureName={signatureName || "Firma sin nombre"}
+              htmlCode={generateHtmlCode()}
+            />
           </TabsContent>
         </Tabs>
       </div>
@@ -1341,11 +1524,7 @@ export default function SignatureGenerator() {
       <div className="lg:col-span-1">
         <div className="sticky top-4">
           <h2 className="text-xl font-semibold mb-4">Vista Previa</h2>
-          <Card className="overflow-hidden">
-            <CardContent className="p-6">
-              <SignaturePreview data={signatureData} />
-            </CardContent>
-          </Card>
+          <SignaturePreviewWrapper data={signatureData} />
 
           <div className="mt-6">
             <h3 className="text-lg font-medium mb-2">Instrucciones</h3>
@@ -1355,11 +1534,8 @@ export default function SignatureGenerator() {
               <li>Activa o desactiva las redes sociales que desees mostrar</li>
               <li>Ajusta los colores según tus preferencias</li>
               <li>Guarda tu firma para usarla más tarde</li>
-              <li>Ve a la pestaña "Código HTML" para obtener el código</li>
-              <li>Copia el código o descarga el archivo HTML</li>
-              <li>
-                Pega el código en la configuración de firma de tu cliente de correo (Gmail, Outlook, Thunderbird, etc.)
-              </li>
+              <li>Ve a la pestaña "Exportar" para obtener el código HTML o imagen</li>
+              <li>Sigue las guías para añadir tu firma a tu cliente de correo favorito</li>
             </ol>
           </div>
         </div>

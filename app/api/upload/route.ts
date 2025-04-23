@@ -1,5 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { put } from "@vercel/blob"
+
+// Importamos Sharp solo en el servidor
 import sharp from "sharp"
 
 export async function POST(request: NextRequest) {

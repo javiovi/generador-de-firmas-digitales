@@ -1,422 +1,212 @@
-import type { SignatureData } from "@/components/signature-generator"
-import { Facebook, Instagram, Youtube, Linkedin, Phone, Mail, Globe, MapPin } from "lucide-react"
-import { TemplateType, getTemplateById } from "@/lib/templates"
+"use client"
 
-// Componente personalizado para el icono de X (anteriormente Twitter)
-function XIcon({ size = 24, className = "" }) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-    >
-      <path d="M6 4l12 16M4 4l12 6 4 10" />
-    </svg>
-  )
+import { MapPin, Phone, Mail, Globe } from "lucide-react"
+import type { SignatureData } from "@/components/signature-generator"
+
+interface SignaturePreviewProps {
+  data: SignatureData
+  darkMode?: boolean
 }
 
-export default function SignaturePreview({ data, darkMode = false }: { data: SignatureData; darkMode?: boolean }) {
-  const template = getTemplateById(data.templateId || TemplateType.CLASSIC)
-
-  // Colores adaptados al modo oscuro
-  const textColor = darkMode ? "text-gray-200" : "text-gray-800"
-  const mutedTextColor = darkMode ? "text-gray-400" : "text-gray-600"
-  const bgColor = darkMode ? "bg-gray-800" : "bg-white"
-  const borderColor = darkMode ? "border-gray-700" : "border-gray-200"
+export default function SignaturePreview({ data, darkMode = false }: SignaturePreviewProps) {
+  const textColor = darkMode ? "#e5e7eb" : "#333333"
+  const mutedTextColor = darkMode ? "#9ca3af" : "#666666"
 
   // Filtrar redes sociales habilitadas
   const enabledSocialNetworks = Object.entries(data.socialLinks)
-    .filter(([_, networkData]) => networkData.enabled)
-    .map(([network, networkData]) => ({ network, url: networkData.url }))
+    .filter(([_, data]) => data.enabled)
+    .map(([network, data]) => ({ network, url: data.url }))
 
-  // Renderizar la plantilla seleccionada
-  switch (data.templateId) {
-    case TemplateType.MODERN:
-      return (
-        <div className={`border p-4 ${bgColor} ${borderColor} rounded-md max-w-full overflow-auto`}>
-          <table cellPadding="0" cellSpacing="0" className="w-full">
-            <tbody>
-              <tr>
-                <td className="align-top pr-4" style={{ width: "120px" }}>
-                  <img
-                    src={data.logoUrl || "/placeholder.svg"}
-                    alt={data.company}
-                    className="w-[100px] h-auto object-contain"
-                  />
-                </td>
-                <td className="align-top px-4 border-l-2 border-r-2" style={{ borderColor: data.primaryColor }}>
-                  <div className="flex flex-col space-y-2">
-                    <h3 className={`text-xl font-bold ${textColor}`}>{data.name}</h3>
-                    <p className="text-sm font-semibold" style={{ color: data.primaryColor }}>
-                      {data.position}
-                    </p>
-
-                    <div className={`pt-2 text-sm ${mutedTextColor} flex items-start gap-2`}>
-                      <MapPin size={16} className="shrink-0 mt-0.5" />
-                      <span>{data.address}</span>
-                    </div>
-
-                    <div className={`text-sm ${mutedTextColor} flex items-center gap-2`}>
-                      <Phone size={16} className="shrink-0" />
-                      <span>{data.phone}</span>
-                    </div>
-
-                    <div className={`text-sm ${mutedTextColor} flex items-center gap-2`}>
-                      <Mail size={16} className="shrink-0" />
-                      <span>{data.email}</span>
-                    </div>
-
-                    <div className="text-sm flex items-center gap-2" style={{ color: data.primaryColor }}>
-                      <Globe size={16} className="shrink-0" />
-                      <span>{data.website}</span>
-                    </div>
-
-                    {enabledSocialNetworks.length > 0 && (
-                      <div className="flex items-center gap-3 pt-2">
-                        {enabledSocialNetworks.map(({ network, url }) => {
-                          let Icon
-                          switch (network) {
-                            case "facebook":
-                              Icon = Facebook
-                              break
-                            case "instagram":
-                              Icon = Instagram
-                              break
-                            case "youtube":
-                              Icon = Youtube
-                              break
-                            case "linkedin":
-                              Icon = Linkedin
-                              break
-                            case "twitter":
-                              Icon = XIcon
-                              break
-                            default:
-                              return null
-                          }
-                          return (
-                            <a
-                              key={network}
-                              href={url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className={`${mutedTextColor} hover:${textColor}`}
-                            >
-                              <Icon size={20} />
-                            </a>
-                          )
-                        })}
-                      </div>
-                    )}
-                  </div>
-                </td>
-                <td className="align-top pl-4" style={{ width: "120px" }}>
-                  <div
-                    className="w-[120px] h-[120px] rounded-full overflow-hidden border-2"
-                    style={{ borderColor: data.primaryColor }}
-                  >
-                    <img
-                      src={data.photoUrl || "/placeholder.svg"}
-                      alt={data.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+  return (
+    <div className="flex">
+      <div className="mr-4">
+        <div className="mb-2">
+          <img src={data.logoUrl || "/placeholder.svg"} alt={data.company} className="w-[150px] h-auto" />
         </div>
-      )
-
-    case TemplateType.MINIMAL:
-      return (
-        <div className={`border p-4 ${bgColor} ${borderColor} rounded-md max-w-full overflow-auto`}>
-          <table cellPadding="0" cellSpacing="0" className="w-full">
-            <tbody>
-              <tr>
-                <td className="align-top pr-4" style={{ width: "100px" }}>
-                  <img
-                    src={data.logoUrl || "/placeholder.svg"}
-                    alt={data.company}
-                    className="w-[80px] h-auto object-contain"
-                  />
-                </td>
-                <td className="align-top">
-                  <div className="flex flex-col space-y-2">
-                    <h3 className={`text-lg font-bold ${textColor}`}>{data.name}</h3>
-                    <p className="text-sm" style={{ color: data.primaryColor }}>
-                      {data.position}
-                    </p>
-
-                    {/* Cambiado a columna en lugar de fila */}
-                    <div className="flex flex-col space-y-1 text-sm pt-1">
-                      <div className={`flex items-center gap-1 ${mutedTextColor}`}>
-                        <Phone size={14} className="shrink-0" />
-                        <span>{data.phone}</span>
-                      </div>
-                      <div className={`flex items-center gap-1 ${mutedTextColor}`}>
-                        <Mail size={14} className="shrink-0" />
-                        <span>{data.email}</span>
-                      </div>
-                      <div className="flex items-center gap-1" style={{ color: data.primaryColor }}>
-                        <Globe size={14} className="shrink-0" />
-                        <span>{data.website}</span>
-                      </div>
-                    </div>
-
-                    {enabledSocialNetworks.length > 0 && (
-                      <div className="flex items-center gap-2 pt-1">
-                        {enabledSocialNetworks.map(({ network, url }) => {
-                          let Icon
-                          switch (network) {
-                            case "facebook":
-                              Icon = Facebook
-                              break
-                            case "instagram":
-                              Icon = Instagram
-                              break
-                            case "youtube":
-                              Icon = Youtube
-                              break
-                            case "linkedin":
-                              Icon = Linkedin
-                              break
-                            case "twitter":
-                              Icon = XIcon
-                              break
-                            default:
-                              return null
-                          }
-                          return (
-                            <a
-                              key={network}
-                              href={url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className={`${mutedTextColor} hover:${textColor}`}
-                            >
-                              <Icon size={16} />
-                            </a>
-                          )
-                        })}
-                      </div>
-                    )}
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <div>
+          <img src={data.photoUrl || "/placeholder.svg"} alt={data.name} className="w-[150px] h-[150px] rounded-full" />
         </div>
-      )
-
-    case TemplateType.CORPORATE:
-      return (
-        <div className={`border p-4 ${bgColor} ${borderColor} rounded-md max-w-full overflow-auto`}>
-          <table
-            cellPadding="0"
-            cellSpacing="0"
-            className="w-full"
-            style={{ border: template.showBorder ? `1px solid ${data.primaryColor}` : "none" }}
+      </div>
+      <div className="border-l-4" style={{ borderColor: data.primaryColor, paddingLeft: "1rem" }}>
+        <div className="mb-1">
+          <div className="text-lg font-bold" style={{ color: textColor }}>
+            {data.name}
+          </div>
+        </div>
+        <div className="mb-3">
+          <div className="text-sm font-semibold" style={{ color: data.primaryColor }}>
+            {data.position}
+          </div>
+          <div className="mt-1 border-b-2 w-12" style={{ borderColor: data.primaryColor }}></div>
+        </div>
+        <div className="mb-2 flex items-start">
+          <MapPin size={16} className="mr-1 mt-0.5 flex-shrink-0" style={{ color: textColor }} />
+          <span className="text-xs" style={{ color: textColor }}>
+            {data.address}
+          </span>
+        </div>
+        <div className="mb-1 flex items-center">
+          <Phone size={16} className="mr-1 flex-shrink-0" style={{ color: textColor }} />
+          <a href={`tel:${data.phone}`} className="text-xs" style={{ color: textColor }}>
+            {data.phone}
+          </a>
+        </div>
+        <div className="mb-1 flex items-center">
+          <Mail size={16} className="mr-1 flex-shrink-0" style={{ color: textColor }} />
+          <a href={`mailto:${data.email}`} className="text-xs" style={{ color: textColor }}>
+            {data.email}
+          </a>
+        </div>
+        <div className="mb-3 flex items-center">
+          <Globe size={16} className="mr-1 flex-shrink-0" style={{ color: data.primaryColor }} />
+          <a
+            href={`https://${data.website}`}
+            className="text-xs"
+            style={{ color: data.primaryColor }}
+            target="_blank"
+            rel="noopener noreferrer"
           >
-            <tbody>
-              <tr>
-                <td colSpan={2} className="text-center p-3" style={{ backgroundColor: data.primaryColor }}>
-                  <img
-                    src={data.logoUrl || "/placeholder.svg"}
-                    alt={data.company}
-                    className="h-[40px] object-contain inline-block"
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td className="align-top p-4" style={{ width: "150px" }}>
-                  <img
-                    src={data.photoUrl || "/placeholder.svg"}
-                    alt={data.name}
-                    className="w-[120px] h-[120px] object-cover"
-                  />
-                </td>
-                <td className="align-top p-4">
-                  <div className="flex flex-col space-y-2">
-                    <h3 className={`text-xl font-bold ${textColor}`}>{data.name}</h3>
-                    <p className="text-sm font-semibold" style={{ color: data.primaryColor }}>
-                      {data.position}
-                    </p>
-                    <div className="w-12 h-0.5 mb-1" style={{ backgroundColor: data.primaryColor }}></div>
-
-                    <div className={`text-sm ${mutedTextColor}`}>
-                      <div className="font-medium">{data.company}</div>
-                      <div>{data.address}</div>
-                    </div>
-
-                    <div className={`text-sm ${mutedTextColor} flex items-center gap-2`}>
-                      <Phone size={16} className="shrink-0" />
-                      <span>{data.phone}</span>
-                    </div>
-
-                    <div className={`text-sm ${mutedTextColor} flex items-center gap-2`}>
-                      <Mail size={16} className="shrink-0" />
-                      <span>{data.email}</span>
-                    </div>
-
-                    <div className="text-sm flex items-center gap-2" style={{ color: data.primaryColor }}>
-                      <Globe size={16} className="shrink-0" />
-                      <span>{data.website}</span>
-                    </div>
-
-                    {enabledSocialNetworks.length > 0 && (
-                      <div className="flex items-center gap-3 pt-2">
-                        {enabledSocialNetworks.map(({ network, url }) => {
-                          let Icon
-                          switch (network) {
-                            case "facebook":
-                              Icon = Facebook
-                              break
-                            case "instagram":
-                              Icon = Instagram
-                              break
-                            case "youtube":
-                              Icon = Youtube
-                              break
-                            case "linkedin":
-                              Icon = Linkedin
-                              break
-                            case "twitter":
-                              Icon = XIcon
-                              break
-                            default:
-                              return null
-                          }
-                          return (
-                            <a
-                              key={network}
-                              href={url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className={`${mutedTextColor} hover:${textColor}`}
-                            >
-                              <Icon size={20} />
-                            </a>
-                          )
-                        })}
-                      </div>
-                    )}
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+            {data.website}
+          </a>
         </div>
-      )
-
-    default: // CLASSIC
-      return (
-        <div className={`border p-4 ${bgColor} ${borderColor} rounded-md max-w-full overflow-auto`}>
-          <table cellPadding="0" cellSpacing="0" className="w-full">
-            <tbody>
-              <tr>
-                <td className="align-top pr-4" style={{ width: "150px" }}>
-                  <div className="flex flex-col items-center space-y-3">
-                    <img
-                      src={data.logoUrl || "/placeholder.svg"}
-                      alt={data.company}
-                      className="w-[120px] h-auto object-contain"
-                    />
-                    <div
-                      className="w-[120px] h-[120px] rounded-full overflow-hidden border-2"
-                      style={{ borderColor: data.primaryColor }}
+        {enabledSocialNetworks.length > 0 && (
+          <div className="flex space-x-2">
+            {enabledSocialNetworks.map(({ network, url }) => {
+              let Icon
+              switch (network) {
+                case "facebook":
+                  return (
+                    <a
+                      key={network}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs"
+                      style={{ color: data.primaryColor }}
                     >
-                      <img
-                        src={data.photoUrl || "/placeholder.svg"}
-                        alt={data.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  </div>
-                </td>
-                <td className="align-top pl-4 border-l-2" style={{ borderColor: data.primaryColor }}>
-                  <div className="flex flex-col space-y-2">
-                    <h3 className={`text-xl font-bold ${textColor}`}>{data.name}</h3>
-                    <p
-                      className="text-sm font-semibold uppercase pb-1 border-b-2"
-                      style={{
-                        color: data.primaryColor,
-                        borderColor: data.primaryColor,
-                      }}
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                      </svg>
+                    </a>
+                  )
+                case "instagram":
+                  return (
+                    <a
+                      key={network}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs"
+                      style={{ color: data.primaryColor }}
                     >
-                      {data.position}
-                    </p>
-
-                    <div className={`pt-2 text-sm ${mutedTextColor} flex items-start gap-2`}>
-                      <MapPin size={16} className="shrink-0 mt-0.5" />
-                      <span>{data.address}</span>
-                    </div>
-
-                    <div className={`text-sm ${mutedTextColor} flex items-center gap-2`}>
-                      <Phone size={16} className="shrink-0" />
-                      <span>{data.phone}</span>
-                    </div>
-
-                    <div className={`text-sm ${mutedTextColor} flex items-center gap-2`}>
-                      <Mail size={16} className="shrink-0" />
-                      <span>{data.email}</span>
-                    </div>
-
-                    <div className="text-sm flex items-center gap-2" style={{ color: data.primaryColor }}>
-                      <Globe size={16} className="shrink-0" />
-                      <span>{data.website}</span>
-                    </div>
-
-                    {enabledSocialNetworks.length > 0 && (
-                      <div className="flex items-center gap-3 pt-2">
-                        {enabledSocialNetworks.map(({ network, url }) => {
-                          let Icon
-                          switch (network) {
-                            case "facebook":
-                              Icon = Facebook
-                              break
-                            case "instagram":
-                              Icon = Instagram
-                              break
-                            case "youtube":
-                              Icon = Youtube
-                              break
-                            case "linkedin":
-                              Icon = Linkedin
-                              break
-                            case "twitter":
-                              Icon = XIcon
-                              break
-                            default:
-                              return null
-                          }
-                          return (
-                            <a
-                              key={network}
-                              href={url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className={`${mutedTextColor} hover:${textColor}`}
-                            >
-                              <Icon size={20} />
-                            </a>
-                          )
-                        })}
-                      </div>
-                    )}
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      )
-  }
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                      </svg>
+                    </a>
+                  )
+                case "youtube":
+                  return (
+                    <a
+                      key={network}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs"
+                      style={{ color: data.primaryColor }}
+                    >
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path>
+                        <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon>
+                      </svg>
+                    </a>
+                  )
+                case "linkedin":
+                  return (
+                    <a
+                      key={network}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs"
+                      style={{ color: data.primaryColor }}
+                    >
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                        <rect x="2" y="9" width="4" height="12"></rect>
+                        <circle cx="4" cy="4" r="2"></circle>
+                      </svg>
+                    </a>
+                  )
+                case "twitter":
+                  return (
+                    <a
+                      key={network}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs"
+                      style={{ color: data.primaryColor }}
+                    >
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M4 4l16 16" />
+                        <path d="M4 20L15 9l5 5L9 15z" />
+                      </svg>
+                    </a>
+                  )
+                default:
+                  return null
+              }
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  )
 }

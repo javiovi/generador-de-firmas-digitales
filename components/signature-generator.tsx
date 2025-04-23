@@ -60,6 +60,10 @@ import SignaturePreviewWrapper from "@/components/signature-preview-wrapper"
 import ExportToImage from "@/components/export-to-image"
 import EmailClientGuides from "@/components/email-client-guides"
 import CollaborationFeatures from "@/components/collaboration-features"
+// Importar el nuevo componente EmailClientPreview
+// Añadir esta línea junto con las otras importaciones:
+
+import EmailClientPreview from "@/components/email-client-preview"
 
 export type SocialLink = {
   url: string
@@ -89,6 +93,8 @@ export type SignatureData = {
 }
 
 // Componente personalizado para el icono de X (anteriormente Twitter)
+// Reemplazar la función XIcon actual con esta versión mejorada:
+
 function XIcon({ size = 24, className = "" }) {
   return (
     <svg
@@ -103,7 +109,8 @@ function XIcon({ size = 24, className = "" }) {
       strokeLinejoin="round"
       className={className}
     >
-      <path d="M6 4l12 16M4 4l12 6 4 10" />
+      <path d="M4 4l16 16" />
+      <path d="M4 20L15 9l5 5L9 15z" />
     </svg>
   )
 }
@@ -122,6 +129,7 @@ export default function SignatureGenerator() {
   const [isUploading, setIsUploading] = useState(false)
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateType>(TemplateType.CLASSIC)
   const [isResponsive, setIsResponsive] = useState(true)
+  const [inlineStyles, setInlineStyles] = useState(true)
 
   const {
     isLoading,
@@ -431,8 +439,48 @@ export default function SignatureGenerator() {
     })
   }
 
+  // Ahora, vamos a modificar la función generateHtmlCode para corregir los problemas mencionados
+  // Buscar la función generateHtmlCode y reemplazar el código HTML de la plantilla clásica:
+
+  // Añadir esta función para calcular la rotación de tono para los iconos
+  // Añadir esta función justo antes de la función generateHtmlCode:
+
+  const getHueRotation = (hexColor: string): number => {
+    // Convertir hex a RGB
+    const r = Number.parseInt(hexColor.slice(1, 3), 16) / 255
+    const g = Number.parseInt(hexColor.slice(3, 5), 16) / 255
+    const b = Number.parseInt(hexColor.slice(5, 7), 16) / 255
+
+    // Calcular HSL
+    const max = Math.max(r, g, b)
+    const min = Math.min(r, g, b)
+    let h = 0
+
+    if (max === min) {
+      h = 0 // achromatic
+    } else {
+      const d = max - min
+      switch (max) {
+        case r:
+          h = (g - b) / d + (g < b ? 6 : 0)
+          break
+        case g:
+          h = (b - r) / d + 2
+          break
+        case b:
+          h = (r - g) / d + 4
+          break
+      }
+      h *= 60
+    }
+
+    // Devolver la rotación necesaria para llegar al tono deseado
+    // Asumiendo que los iconos originales son azules (240 grados)
+    return h - 240
+  }
+
   // Generar el código HTML para la firma según la plantilla seleccionada
-  const generateHtmlCode = (darkMode = false) => {
+  const generateHtmlCode = (darkMode = false, inlineStyles = true) => {
     const template = getTemplateById(signatureData.templateId)
 
     // Colores adaptados al modo oscuro
@@ -480,44 +528,48 @@ export default function SignatureGenerator() {
     let socialHtml = ""
     if (enabledSocialNetworks.length > 0) {
       socialHtml = `
-        <tr>
-          <td style="padding: 10px 0 0 0;">
-            <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
-              <tr>
-                ${enabledSocialNetworks
-                  .map(({ network, url }) => {
-                    let iconUrl = ""
-                    switch (network) {
-                      case "facebook":
-                        iconUrl = "https://cdn-icons-png.flaticon.com/512/733/733547.png"
-                        break
-                      case "instagram":
-                        iconUrl = "https://cdn-icons-png.flaticon.com/512/2111/2111463.png"
-                        break
-                      case "youtube":
-                        iconUrl = "https://cdn-icons-png.flaticon.com/512/1384/1384060.png"
-                        break
-                      case "linkedin":
-                        iconUrl = "https://cdn-icons-png.flaticon.com/512/3536/3536505.png"
-                        break
-                      case "twitter":
-                        iconUrl = "https://cdn-icons-png.flaticon.com/512/733/733579.png"
-                        break
-                    }
-                    return `
-                    <td style="padding-right: 10px;">
-                      <a href="${url}" target="_blank" style="text-decoration: none;">
-                        <img src="${iconUrl}" width="24" height="24" alt="${network}" style="border: none; display: block; outline: none;">
-                      </a>
-                    </td>
-                  `
-                  })
-                  .join("")}
-              </tr>
-            </table>
-          </td>
-        </tr>
-      `
+    <tr>
+      <td style="padding: 10px 0 0 0;">
+        <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
+          <tr>
+            ${enabledSocialNetworks
+              .map(({ network, url }) => {
+                // Usar SVG para todos los iconos sociales
+                let svgIcon = ""
+                switch (network) {
+                  case "facebook":
+                    svgIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${signatureData.primaryColor}" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>`
+                    break
+                  case "instagram":
+                    svgIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${signatureData.primaryColor}" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>`
+                    break
+                  case "youtube":
+                    svgIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${signatureData.primaryColor}" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg>`
+                    break
+                  case "linkedin":
+                    svgIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${signatureData.primaryColor}" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>`
+                    break
+                  case "twitter":
+                    // Icono de X mejorado
+                    svgIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${signatureData.primaryColor}" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4l16 16" /><path d="M4 20L15 9l5 5L9 15z" /></svg>`
+                    break
+                }
+                return `
+                <td style="padding-right: 10px;">
+                  <a href="${url}" target="_blank" style="text-decoration: none;">
+                    <div style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; color: ${signatureData.primaryColor};">
+                      ${svgIcon}
+                    </div>
+                  </a>
+                </td>
+              `
+              })
+              .join("")}
+          </tr>
+        </table>
+      </td>
+    </tr>
+  `
     }
 
     // Generar HTML según la posición de las imágenes
@@ -536,9 +588,9 @@ export default function SignatureGenerator() {
   </style>
 </head>
 <body>
-  <table cellpadding="0" cellspacing="0" border="0" class="signature-table" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
+  <table cellpadding="0" cellspacing="0" border="0" class="signature-table" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0; width: 550px;">
     <tr>
-      <td class="signature-logo" style="padding-right: 15px; vertical-align: top;">
+      <td class="signature-logo" style="padding-right: 15px; vertical-align: top; width: 150px;">
         <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
           <tr>
             <td style="padding: 0 0 10px 0; text-align: center;">
@@ -553,7 +605,7 @@ export default function SignatureGenerator() {
         </table>
       </td>
       <td class="signature-content" style="padding-left: 15px; border-left: 3px solid ${signatureData.primaryColor}; vertical-align: top;">
-        <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
+        <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0; width: 100%;">
           <tr>
             <td style="padding: 0 0 5px 0;">
               <div style="font-family: Arial, sans-serif; font-size: 18px; font-weight: bold; color: ${textColor}; margin: 0;">${signatureData.name}</div>
@@ -567,7 +619,21 @@ export default function SignatureGenerator() {
           </tr>
           <tr>
             <td style="padding: 0 0 10px 0;">
-              <div style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor}; margin: 0;">${signatureData.address}</div>
+              <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
+                <tr>
+                  <td width="20" style="vertical-align: top; padding-right: 5px;">
+                    <div style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${textColor}" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                      </svg>
+                    </div>
+                  </td>
+                  <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor}; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    ${signatureData.address}
+                  </td>
+                </tr>
+              </table>
             </td>
           </tr>
           <tr>
@@ -575,7 +641,11 @@ export default function SignatureGenerator() {
               <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
                 <tr>
                   <td width="20" style="vertical-align: top; padding-right: 5px;">
-                    <img src="https://cdn-icons-png.flaticon.com/512/134/134937.png" width="16" height="16" alt="Phone" style="border: none; display: block; outline: none;">
+                    <div style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${textColor}" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                      </svg>
+                    </div>
                   </td>
                   <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor};">
                     <a href="tel:${signatureData.phone}" style="color: ${textColor}; text-decoration: none;">${signatureData.phone}</a>
@@ -589,7 +659,12 @@ export default function SignatureGenerator() {
               <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
                 <tr>
                   <td width="20" style="vertical-align: top; padding-right: 5px;">
-                    <img src="https://cdn-icons-png.flaticon.com/512/561/561127.png" width="16" height="16" alt="Email" style="border: none; display: block; outline: none;">
+                    <div style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${textColor}" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                      </svg>
+                    </div>
                   </td>
                   <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor};">
                     <a href="mailto:${signatureData.email}" style="color: ${textColor}; text-decoration: none;">${signatureData.email}</a>
@@ -603,7 +678,13 @@ export default function SignatureGenerator() {
               <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
                 <tr>
                   <td width="20" style="vertical-align: top; padding-right: 5px;">
-                    <img src="https://cdn-icons-png.flaticon.com/512/1006/1006771.png" width="16" height="16" alt="Website" style="border: none; display: block; outline: none;">
+                    <div style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${signatureData.primaryColor}" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                      </svg>
+                    </div>
                   </td>
                   <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${signatureData.primaryColor};">
                     <a href="https://${signatureData.website}" style="color: ${signatureData.primaryColor}; text-decoration: none;">${signatureData.website}</a>
@@ -662,7 +743,21 @@ export default function SignatureGenerator() {
           </tr>
           <tr>
             <td style="padding: 0 0 10px 0;">
-              <div style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor}; margin: 0;">${signatureData.address}</div>
+              <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
+                <tr>
+                  <td width="20" style="vertical-align: top; padding-right: 5px;">
+                    <div style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${textColor}" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                      </svg>
+                    </div>
+                  </td>
+                  <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor}; margin: 0;">
+                    ${signatureData.address}
+                  </td>
+                </tr>
+              </table>
             </td>
           </tr>
           <tr>
@@ -670,7 +765,11 @@ export default function SignatureGenerator() {
               <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
                 <tr>
                   <td width="20" style="vertical-align: top; padding-right: 5px;">
-                    <img src="https://cdn-icons-png.flaticon.com/512/134/134937.png" width="16" height="16" alt="Phone" style="border: none; display: block; outline: none;">
+                    <div style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${textColor}" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                      </svg>
+                    </div>
                   </td>
                   <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor};">
                     <a href="tel:${signatureData.phone}" style="color: ${textColor}; text-decoration: none;">${signatureData.phone}</a>
@@ -684,7 +783,12 @@ export default function SignatureGenerator() {
               <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
                 <tr>
                   <td width="20" style="vertical-align: top; padding-right: 5px;">
-                    <img src="https://cdn-icons-png.flaticon.com/512/561/561127.png" width="16" height="16" alt="Email" style="border: none; display: block; outline: none;">
+                    <div style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${textColor}" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                      </svg>
+                    </div>
                   </td>
                   <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor};">
                     <a href="mailto:${signatureData.email}" style="color: ${textColor}; text-decoration: none;">${signatureData.email}</a>
@@ -698,7 +802,13 @@ export default function SignatureGenerator() {
               <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
                 <tr>
                   <td width="20" style="vertical-align: top; padding-right: 5px;">
-                    <img src="https://cdn-icons-png.flaticon.com/512/1006/1006771.png" width="16" height="16" alt="Website" style="border: none; display: block; outline: none;">
+                    <div style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${signatureData.primaryColor}" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                      </svg>
+                    </div>
                   </td>
                   <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${signatureData.primaryColor};">
                     <a href="https://${signatureData.website}" style="color: ${signatureData.primaryColor}; text-decoration: none;">${signatureData.website}</a>
@@ -782,28 +892,31 @@ export default function SignatureGenerator() {
                 <tr>
                   ${enabledSocialNetworks
                     .map(({ network, url }) => {
-                      let iconUrl = ""
+                      // Usar SVG para todos los iconos sociales
+                      let svgIcon = ""
                       switch (network) {
                         case "facebook":
-                          iconUrl = "https://cdn-icons-png.flaticon.com/512/733/733547.png"
+                          svgIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${signatureData.primaryColor}" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>`
                           break
                         case "instagram":
-                          iconUrl = "https://cdn-icons-png.flaticon.com/512/2111/2111463.png"
+                          svgIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${signatureData.primaryColor}" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>`
                           break
                         case "youtube":
-                          iconUrl = "https://cdn-icons-png.flaticon.com/512/1384/1384060.png"
+                          svgIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${signatureData.primaryColor}" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg>`
                           break
                         case "linkedin":
-                          iconUrl = "https://cdn-icons-png.flaticon.com/512/3536/3536505.png"
+                          svgIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${signatureData.primaryColor}" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>`
                           break
                         case "twitter":
-                          iconUrl = "https://cdn-icons-png.flaticon.com/512/733/733579.png"
+                          svgIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${signatureData.primaryColor}" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4l16 16" /><path d="M4 20L15 9l5 5L9 15z" /></svg>`
                           break
                       }
                       return `
                       <td style="padding-right: 8px;">
                         <a href="${url}" target="_blank" style="text-decoration: none;">
-                          <img src="${iconUrl}" width="18" height="18" alt="${network}" style="border: none; display: block; outline: none;">
+                          <div style="width: 18px; height: 18px; display: flex; align-items: center; justify-content: center;">
+                            ${svgIcon}
+                          </div>
                         </a>
                       </td>
                     `
@@ -872,7 +985,21 @@ export default function SignatureGenerator() {
           <tr>
             <td style="padding: 0 0 10px 0;">
               <div style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor}; margin: 0;">${signatureData.company}</div>
-              <div style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor}; margin: 0;">${signatureData.address}</div>
+              <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
+                <tr>
+                  <td width="20" style="vertical-align: top; padding-right: 5px;">
+                    <div style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${textColor}" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                      </svg>
+                    </div>
+                  </td>
+                  <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor}; margin: 0;">
+                    ${signatureData.address}
+                  </td>
+                </tr>
+              </table>
             </td>
           </tr>
           <tr>
@@ -880,7 +1007,11 @@ export default function SignatureGenerator() {
               <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
                 <tr>
                   <td width="20" style="vertical-align: top; padding-right: 5px;">
-                    <img src="https://cdn-icons-png.flaticon.com/512/134/134937.png" width="16" height="16" alt="Phone" style="border: none; display: block; outline: none;">
+                    <div style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${textColor}" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                      </svg>
+                    </div>
                   </td>
                   <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor};">
                     <a href="tel:${signatureData.phone}" style="color: ${textColor}; text-decoration: none;">${signatureData.phone}</a>
@@ -894,7 +1025,12 @@ export default function SignatureGenerator() {
               <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
                 <tr>
                   <td width="20" style="vertical-align: top; padding-right: 5px;">
-                    <img src="https://cdn-icons-png.flaticon.com/512/561/561127.png" width="16" height="16" alt="Email" style="border: none; display: block; outline: none;">
+                    <div style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${textColor}" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                      </svg>
+                    </div>
                   </td>
                   <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor};">
                     <a href="mailto:${signatureData.email}" style="color: ${textColor}; text-decoration: none;">${signatureData.email}</a>
@@ -908,7 +1044,13 @@ export default function SignatureGenerator() {
               <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
                 <tr>
                   <td width="20" style="vertical-align: top; padding-right: 5px;">
-                    <img src="https://cdn-icons-png.flaticon.com/512/1006/1006771.png" width="16" height="16" alt="Website" style="border: none; display: block; outline: none;">
+                    <div style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${signatureData.primaryColor}" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                      </svg>
+                    </div>
                   </td>
                   <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${signatureData.primaryColor};">
                     <a href="https://${signatureData.website}" style="color: ${signatureData.primaryColor}; text-decoration: none;">${signatureData.website}</a>
@@ -981,7 +1123,11 @@ export default function SignatureGenerator() {
               <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
                 <tr>
                   <td width="20" style="vertical-align: top; padding-right: 5px;">
-                    <img src="https://cdn-icons-png.flaticon.com/512/134/134937.png" width="16" height="16" alt="Phone" style="border: none; display: block; outline: none;">
+                    <div style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${textColor}" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                      </svg>
+                    </div>
                   </td>
                   <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor};">
                     <a href="tel:${signatureData.phone}" style="color: ${textColor}; text-decoration: none;">${signatureData.phone}</a>
@@ -995,7 +1141,12 @@ export default function SignatureGenerator() {
               <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
                 <tr>
                   <td width="20" style="vertical-align: top; padding-right: 5px;">
-                    <img src="https://cdn-icons-png.flaticon.com/512/561/561127.png" width="16" height="16" alt="Email" style="border: none; display: block; outline: none;">
+                    <div style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${textColor}" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                      </svg>
+                    </div>
                   </td>
                   <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor};">
                     <a href="mailto:${signatureData.email}" style="color: ${textColor}; text-decoration: none;">${signatureData.email}</a>
@@ -1009,7 +1160,13 @@ export default function SignatureGenerator() {
               <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
                 <tr>
                   <td width="20" style="vertical-align: top; padding-right: 5px;">
-                    <img src="https://cdn-icons-png.flaticon.com/512/1006/1006771.png" width="16" height="16" alt="Website" style="border: none; display: block; outline: none;">
+                    <div style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${signatureData.primaryColor}" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                      </svg>
+                    </div>
                   </td>
                   <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${signatureData.primaryColor};">
                     <a href="https://${signatureData.website}" style="color: ${signatureData.primaryColor}; text-decoration: none;">${signatureData.website}</a>
@@ -1425,9 +1582,10 @@ export default function SignatureGenerator() {
             <Card>
               <CardContent className="pt-6">
                 <Tabs value={exportTab} onValueChange={setExportTab}>
-                  <TabsList className="grid w-full grid-cols-3 mb-4">
+                  <TabsList className="grid w-full grid-cols-4 mb-4">
                     <TabsTrigger value="html">Código HTML</TabsTrigger>
                     <TabsTrigger value="image">Imagen</TabsTrigger>
+                    <TabsTrigger value="preview">Vista Previa</TabsTrigger>
                     <TabsTrigger value="guides">Guías</TabsTrigger>
                   </TabsList>
 
@@ -1439,12 +1597,25 @@ export default function SignatureGenerator() {
                           <Switch id="responsive-mode" checked={isResponsive} onCheckedChange={setIsResponsive} />
                           <Label htmlFor="responsive-mode">Responsivo</Label>
                         </div>
+                        <div className="flex items-center space-x-2 mr-2">
+                          <Switch
+                            id="inline-styles"
+                            checked={inlineStyles}
+                            onCheckedChange={(checked) => {
+                              setInlineStyles(checked)
+                              if (htmlCodeRef.current) {
+                                htmlCodeRef.current.value = generateHtmlCode(false, checked)
+                              }
+                            }}
+                          />
+                          <Label htmlFor="inline-styles">Estilos Inline</Label>
+                        </div>
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => {
                             if (htmlCodeRef.current) {
-                              htmlCodeRef.current.value = generateHtmlCode(false)
+                              htmlCodeRef.current.value = generateHtmlCode(false, inlineStyles)
                             }
                           }}
                           className="flex items-center gap-1"
@@ -1457,7 +1628,7 @@ export default function SignatureGenerator() {
                           size="sm"
                           onClick={() => {
                             if (htmlCodeRef.current) {
-                              htmlCodeRef.current.value = generateHtmlCode(true)
+                              htmlCodeRef.current.value = generateHtmlCode(true, inlineStyles)
                             }
                           }}
                           className="flex items-center gap-1"
@@ -1500,6 +1671,10 @@ export default function SignatureGenerator() {
                       compartirla en redes sociales.
                     </p>
                     <ExportToImage signatureData={signatureData} />
+                  </TabsContent>
+
+                  <TabsContent value="preview" className="space-y-4">
+                    <EmailClientPreview signatureData={signatureData} htmlCode={generateHtmlCode()} />
                   </TabsContent>
 
                   <TabsContent value="guides" className="space-y-4">

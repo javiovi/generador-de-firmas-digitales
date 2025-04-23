@@ -63,7 +63,8 @@
     "@supabase/auth-helpers-nextjs": "latest",
     "js-cookie": "latest",
     "html2canvas": "latest",
-    "qrcode.react": "latest"
+    "qrcode.react": "latest",
+    "sharp": "latest"
   },
   "devDependencies": {
     "@types/node": "^22",

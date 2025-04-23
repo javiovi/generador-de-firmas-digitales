@@ -6,9 +6,32 @@ import { Button } from "@/components/ui/button"
 import { Sun, Moon, Smartphone, Tablet, Monitor } from "lucide-react"
 import SignaturePreview from "@/components/signature-preview"
 import type { SignatureData } from "@/components/signature-generator"
+// Importar los iconos de Lucide React si no están ya importados
+import { Facebook, Instagram, Linkedin, Youtube } from "lucide-react"
 
 interface SignaturePreviewWrapperProps {
   data: SignatureData
+}
+
+// Asegurarse de que el icono de X (Twitter) esté definido correctamente
+function XIcon({ size = 16, className = "" }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <line x1="18" y1="6" x2="6" y2="18"></line>
+      <line x1="6" y1="6" x2="18" y2="18"></line>
+    </svg>
+  )
 }
 
 export default function SignaturePreviewWrapper({ data }: SignaturePreviewWrapperProps) {
@@ -24,6 +47,43 @@ export default function SignaturePreviewWrapper({ data }: SignaturePreviewWrappe
       default:
         return "w-full"
     }
+  }
+
+  const enabledSocialNetworks = data.socialNetworks
+    ? Object.keys(data.socialNetworks).filter((key) => data.socialNetworks?.[key])
+    : []
+
+  const renderSocialIcons = () => {
+    return (
+      // Asegurarse de que los iconos sociales se rendericen correctamente
+      enabledSocialNetworks.map((network) => {
+        let Icon
+        switch (network) {
+          case "facebook":
+            Icon = Facebook
+            break
+          case "instagram":
+            Icon = Instagram
+            break
+          case "youtube":
+            Icon = Youtube
+            break
+          case "linkedin":
+            Icon = Linkedin
+            break
+          case "twitter":
+            Icon = XIcon
+            break
+          default:
+            return null
+        }
+        return (
+          <a key={network} href="#" className="mr-2 text-primary hover:text-primary/80" aria-label={network}>
+            <Icon size={16} />
+          </a>
+        )
+      })
+    )
   }
 
   return (
@@ -66,7 +126,7 @@ export default function SignaturePreviewWrapper({ data }: SignaturePreviewWrappe
 
       <Card className={`overflow-hidden ${getDeviceWidth()} mx-auto`}>
         <CardContent className={`p-6 ${darkMode ? "bg-gray-800" : "bg-white"}`}>
-          <SignaturePreview data={data} darkMode={darkMode} />
+          <SignaturePreview data={data} darkMode={darkMode} renderSocialIcons={renderSocialIcons} />
         </CardContent>
       </Card>
     </div>

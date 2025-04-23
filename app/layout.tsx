@@ -22,8 +22,10 @@ export default function RootLayout({
     <html lang="es">
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="light">
-          {children}
-          <Toaster />
+          <div className="max-w-7xl mx-auto p-4 md:p-6 lg:max-w-[1300px]">
+            {children}
+            <Toaster />
+          </div>
         </ThemeProvider>
       </body>
     </html>

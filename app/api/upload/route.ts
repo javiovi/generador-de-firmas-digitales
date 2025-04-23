@@ -19,13 +19,19 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(arrayBuffer)
 
     let processedBuffer
+    let contentType = file.type
     const fileType = file.type.split("/")[1]
 
-    if (fileType === "jpeg" || fileType === "jpg" || fileType === "png") {
+    // Si es SVG, no lo procesamos con sharp
+    if (fileType === "svg+xml") {
+      processedBuffer = buffer
+      contentType = "image/svg+xml"
+    } else if (fileType === "jpeg" || fileType === "jpg" || fileType === "png") {
       processedBuffer = await sharp(buffer)
         .resize(1000, 1000, { fit: "inside", withoutEnlargement: true })
         .jpeg({ quality: 80 })
         .toBuffer()
+      contentType = "image/jpeg"
     } else {
       processedBuffer = buffer
     }
@@ -36,7 +42,7 @@ export async function POST(request: NextRequest) {
     // Subir el archivo procesado a Vercel Blob
     const blob = await put(filename, processedBuffer, {
       access: "public",
-      contentType: "image/jpeg",
+      contentType: contentType,
     })
 
     return NextResponse.json({ url: blob.url })

@@ -599,7 +599,7 @@ export default function SignatureGenerator() {
           </tr>
           <tr>
             <td style="padding: 0; text-align: center;">
-              <img src="${signatureData.photoUrl}" alt="${signatureData.name}" width="150" height="150" class="signature-profile-image" style="width: 150px; height: 150px; max-width: 150px; border-radius: 75px; display: block;">
+              <img src="${signatureData.photoUrl}" alt="${signatureData.name}" width="140" height="140" class="signature-profile-image" style="width: 140px; height: 140px; max-width: 140px; border-radius: 70px; border: 4px solid ${signatureData.primaryColor}; display: block;">
             </td>
           </tr>
         </table>
@@ -1533,12 +1533,13 @@ export default function SignatureGenerator() {
                         <Input
                           id="logoUpload"
                           type="file"
-                          accept="image/*"
+                          accept="image/png,image/jpeg,image/jpg,image/svg+xml"
                           onChange={(e) => handleFileUpload(e, "logoUrl")}
                           disabled={isUploading}
                         />
                         {isUploading && <Loader2 className="h-4 w-4 animate-spin" />}
                       </div>
+                      <p className="text-xs text-muted-foreground">Formatos aceptados: PNG, JPG, SVG</p>
                       {signatureData.logoUrl && signatureData.logoUrl.startsWith("http") && (
                         <div className="mt-2">
                           <img

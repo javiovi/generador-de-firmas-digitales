@@ -24,7 +24,12 @@ export default function SignaturePreview({ data, darkMode = false }: SignaturePr
           <img src={data.logoUrl || "/placeholder.svg"} alt={data.company} className="w-[150px] h-auto" />
         </div>
         <div>
-          <img src={data.photoUrl || "/placeholder.svg"} alt={data.name} className="w-[150px] h-[150px] rounded-full" />
+          <div
+            className="w-[140px] h-[140px] rounded-full overflow-hidden border-4"
+            style={{ borderColor: data.primaryColor }}
+          >
+            <img src={data.photoUrl || "/placeholder.svg"} alt={data.name} className="w-full h-full object-cover" />
+          </div>
         </div>
       </div>
       <div className="border-l-4" style={{ borderColor: data.primaryColor, paddingLeft: "1rem" }}>

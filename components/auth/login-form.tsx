@@ -14,11 +14,13 @@ import { toast } from "@/components/ui/use-toast"
 import { createBrowserSupabaseClient } from "@/lib/supabase"
 import { Loader2 } from "lucide-react"
 import { setDemoUser } from "@/lib/demo-auth"
+import Cookies from "js-cookie"
 
 export default function LoginForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [imageError, setImageError] = useState(false)
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -41,12 +43,19 @@ export default function LoginForm() {
         // Establecer cookie para el usuario de demostración
         setDemoUser()
 
+        // También establecer una cookie de modo demo para la página principal
+        Cookies.set("demo_mode", "true", { expires: 1 })
+
         toast({
           title: "Inicio de sesión exitoso",
           description: "Has iniciado sesión con la cuenta de demostración",
         })
 
-        router.push("/")
+        // Usar setTimeout para asegurar que las cookies se establezcan antes de la redirección
+        setTimeout(() => {
+          window.location.href = "/"
+        }, 100)
+
         return
       }
 
@@ -66,8 +75,8 @@ export default function LoginForm() {
         description: "Has iniciado sesión correctamente",
       })
 
-      router.push("/")
-      router.refresh()
+      // Usar window.location.href en lugar de router.push para forzar una recarga completa
+      window.location.href = "/"
     } catch (error: any) {
       console.error("Error de inicio de sesión:", error)
       toast({
@@ -88,14 +97,21 @@ export default function LoginForm() {
   return (
     <div className="mx-auto w-full max-w-md rounded-2xl bg-white/80 backdrop-blur-sm p-8 shadow-xl border border-rose-100">
       <div className="mb-8 flex justify-center">
-        <Image
-          src="/images/identymail-logo.png"
-          alt="Identymail"
-          width={220}
-          height={70}
-          priority
-          className="h-auto w-auto"
-        />
+        {!imageError ? (
+          <Image
+            src="/images/identymail-logo.png"
+            alt="Identymail"
+            width={220}
+            height={70}
+            priority
+            className="h-auto w-auto"
+            onError={() => setImageError(true)}
+          />
+        ) : (
+          <div className="h-16 flex items-center justify-center">
+            <h2 className="text-2xl font-bold text-rose-500">Identymail</h2>
+          </div>
+        )}
       </div>
 
       <Card className="border-none shadow-none bg-transparent">

@@ -4,23 +4,22 @@ import { redirect } from "next/navigation"
 // Verificar si el usuario está autenticado en el servidor
 // Usando solo el token de servicio de Supabase
 export async function requireAuth() {
-  try {
-    const supabase = createServerSupabaseClient()
+  const supabase = createServerSupabaseClient()
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
-    if (!user) {
-      redirect("/login")
-    }
-
-    return user
-  } catch (error) {
-    console.error("Error requiring auth:", error)
-    // En caso de error, redirigir al login
-    redirect("/login")
+  if (!user) {
+    return null // En lugar de redirigir, devolvemos null
   }
+
+  return user
+}
+
+// Función para redirigir si no hay usuario autenticado
+export function redirectToLogin() {
+  redirect("/login")
 }
 
 // Verificar si el usuario está autenticado en el cliente

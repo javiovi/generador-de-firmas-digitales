@@ -2,52 +2,44 @@ import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs"
 
-export async function middleware(request: NextRequest) {
+// Rutas que no requieren autenticación
+const publicRoutes = ["/login", "/register", "/reset-password", "/update-password"]
+
+export async function middleware(req: NextRequest) {
   const res = NextResponse.next()
-  const supabase = createMiddlewareClient({ req: request, res })
+  const supabase = createMiddlewareClient({ req, res })
 
-  // Refrescar la sesión si existe
-  await supabase.auth.getSession()
+  // Verificar si el usuario está en modo demo
+  const isDemoMode = req.cookies.get("demo_mode")?.value === "true"
 
-  // Verificar si el usuario está autenticado para rutas protegidas
+  // Si está en modo demo, permitir acceso a todas las rutas
+  if (isDemoMode) {
+    return res
+  }
+
+  // Verificar si la ruta actual es pública
+  const isPublicRoute = publicRoutes.some((route) => req.nextUrl.pathname.startsWith(route))
+
+  // Si es una ruta pública, permitir acceso
+  if (isPublicRoute) {
+    return res
+  }
+
+  // Verificar autenticación para rutas protegidas
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
-  // Rutas protegidas que requieren autenticación
-  const protectedRoutes = ["/", "/api/signatures"]
-  const isProtectedRoute = protectedRoutes.some(
-    (route) => request.nextUrl.pathname === route || request.nextUrl.pathname.startsWith("/api/signatures/"),
-  )
-
-  // Rutas de autenticación
-  const authRoutes = ["/login", "/register", "/reset-password"]
-  const isAuthRoute = authRoutes.some((route) => request.nextUrl.pathname === route)
-
-  // Verificar si hay una cookie de demostración
-  const isDemoUser = request.cookies.get("demo_user")?.value === "true"
-
-  // Redirigir a login si no está autenticado y la ruta es protegida
-  if (isProtectedRoute && !user && !isDemoUser) {
-    return NextResponse.redirect(new URL("/login", request.url))
-  }
-
-  // Redirigir a la página principal si está autenticado y está en una ruta de autenticación
-  if (isAuthRoute && (user || isDemoUser)) {
-    return NextResponse.redirect(new URL("/", request.url))
+  // Si no hay usuario y no es una ruta pública, redirigir al login
+  if (!user && !isPublicRoute) {
+    const redirectUrl = new URL("/login", req.url)
+    return NextResponse.redirect(redirectUrl)
   }
 
   return res
 }
 
+// Configurar el middleware para ejecutarse en todas las rutas excepto _next y api
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
-  ],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|api/).*)"],
 }

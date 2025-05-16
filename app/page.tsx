@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import SignatureGenerator from "@/components/signature-generator"
 import Navbar from "@/components/navbar"
 import { requireAuth } from "@/lib/auth"
+import { cookies } from "next/headers"
 
 export const metadata: Metadata = {
   title: "Generador de Firmas de Email",
@@ -9,13 +10,17 @@ export const metadata: Metadata = {
 }
 
 export default async function Home() {
-  try {
-    // Intentar verificar autenticación, pero capturar errores para permitir modo demo
-    await requireAuth()
-  } catch (error) {
-    // Si falla la autenticación, el middleware se encargará de redirigir
-    // o permitir el acceso si es un usuario de demostración
-    console.log("Verificación de autenticación omitida, posible usuario de demostración")
+  // Verificar si hay una cookie de modo demo
+  const cookieStore = cookies()
+  const isDemoMode = cookieStore.get("demo_mode")?.value === "true"
+
+  // Solo intentamos autenticar si no estamos en modo demo
+  let user = null
+  if (!isDemoMode) {
+    user = await requireAuth()
+
+    // Si no hay usuario y no estamos en modo demo, verificamos en el middleware
+    // El middleware se encargará de la redirección si es necesario
   }
 
   return (

@@ -111,10 +111,10 @@ export default function Navbar() {
           <div className="flex items-center">
             <Link href="/" className="flex items-center">
               <Image
-                src="/images/identymail-logo.png"
+                src="/images/identy-logo-transparente.png"
                 alt="Identymail Logo"
-                width={200}
-                height={50}
+                width={180}
+                height={48}
                 className="h-12 w-auto"
                 priority
               />

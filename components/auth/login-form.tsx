@@ -12,15 +12,13 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent } from "@/components/ui/card"
 import { toast } from "@/components/ui/use-toast"
 import { createBrowserSupabaseClient } from "@/lib/supabase"
-import { Loader2 } from "lucide-react"
-import { setDemoUser } from "@/lib/demo-auth"
-import Cookies from "js-cookie"
+import { Loader2, Eye, EyeOff } from "lucide-react"
 
 export default function LoginForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const [imageError, setImageError] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -37,29 +35,31 @@ export default function LoginForm() {
 
     try {
       setIsLoading(true)
+      const supabase = createBrowserSupabaseClient()
 
-      // Usuario de prueba para demostración
-      if (email === "demo@example.com" && password === "demo123456") {
-        // Establecer cookie para el usuario de demostración
-        setDemoUser()
+      // Credenciales fijas para la app beta
+      if (email === "admin@gmail.com" && password === "123456") {
+        const { error } = await supabase.auth.signInWithPassword({
+          email: "admin@gmail.com",
+          password: "123456",
+        })
 
-        // También establecer una cookie de modo demo para la página principal
-        Cookies.set("demo_mode", "true", { expires: 1 })
+        if (error) {
+          throw error
+        }
 
         toast({
           title: "Inicio de sesión exitoso",
-          description: "Has iniciado sesión con la cuenta de demostración",
+          description: "Has iniciado sesión en la app beta",
         })
 
-        // Usar setTimeout para asegurar que las cookies se establezcan antes de la redirección
+        // Forzar la redirección después de un breve retraso
         setTimeout(() => {
           window.location.href = "/"
-        }, 100)
+        }, 500)
 
         return
       }
-
-      const supabase = createBrowserSupabaseClient()
 
       const { error } = await supabase.auth.signInWithPassword({
         email,
@@ -75,8 +75,10 @@ export default function LoginForm() {
         description: "Has iniciado sesión correctamente",
       })
 
-      // Usar window.location.href en lugar de router.push para forzar una recarga completa
-      window.location.href = "/"
+      // Forzar la redirección después de un breve retraso
+      setTimeout(() => {
+        window.location.href = "/"
+      }, 500)
     } catch (error: any) {
       console.error("Error de inicio de sesión:", error)
       toast({
@@ -89,29 +91,21 @@ export default function LoginForm() {
     }
   }
 
-  const handleDemoLogin = () => {
-    setEmail("demo@example.com")
-    setPassword("demo123456")
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword)
   }
 
   return (
     <div className="mx-auto w-full max-w-md rounded-2xl bg-white/80 backdrop-blur-sm p-8 shadow-xl border border-rose-100">
       <div className="mb-8 flex justify-center">
-        {!imageError ? (
-          <Image
-            src="/images/identymail-logo.png"
-            alt="Identymail"
-            width={220}
-            height={70}
-            priority
-            className="h-auto w-auto"
-            onError={() => setImageError(true)}
-          />
-        ) : (
-          <div className="h-16 flex items-center justify-center">
-            <h2 className="text-2xl font-bold text-rose-500">Identymail</h2>
-          </div>
-        )}
+        <Image
+          src="/images/identy-logo-transparente.png"
+          alt="Identymail"
+          width={180}
+          height={60}
+          priority
+          className="h-auto w-auto"
+        />
       </div>
 
       <Card className="border-none shadow-none bg-transparent">
@@ -136,14 +130,26 @@ export default function LoginForm() {
                   ¿Olvidaste tu contraseña?
                 </Link>
               </div>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                  onClick={togglePasswordVisibility}
+                  tabIndex={-1}
+                  aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
             </div>
 
             <Button type="submit" className="w-full bg-rose-500 text-white hover:bg-rose-600" disabled={isLoading}>
@@ -156,17 +162,6 @@ export default function LoginForm() {
                 "Iniciar Sesión"
               )}
             </Button>
-
-            <div className="text-center">
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full border-gray-300 hover:bg-gray-50"
-                onClick={handleDemoLogin}
-              >
-                Usar cuenta de demostración
-              </Button>
-            </div>
 
             <div className="text-center text-sm">
               ¿No tienes una cuenta?{" "}

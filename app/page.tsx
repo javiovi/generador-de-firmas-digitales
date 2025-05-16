@@ -5,57 +5,13 @@ import SignatureGenerator from "@/components/signature-generator"
 import Navbar from "@/components/navbar"
 import { motion } from "framer-motion"
 import { useEffect, useState } from "react"
-import Cookies from "js-cookie"
-import { createBrowserSupabaseClient } from "@/lib/supabase"
 
 export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false)
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
-  const [imageError, setImageError] = useState(false)
 
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        // Verificar si es un usuario de demostración
-        const isDemoUser = Cookies.get("demo_user") === "true"
-
-        if (isDemoUser) {
-          setIsAuthenticated(true)
-          setIsLoading(false)
-          setIsLoaded(true)
-          return
-        }
-
-        // Verificar autenticación con Supabase
-        const supabase = createBrowserSupabaseClient()
-        const { data } = await supabase.auth.getSession()
-
-        if (data.session) {
-          setIsAuthenticated(true)
-        } else {
-          // Redirigir a login si no hay sesión
-          window.location.href = "/login"
-          return
-        }
-      } catch (error) {
-        console.error("Error checking auth:", error)
-      } finally {
-        setIsLoading(false)
-        setIsLoaded(true)
-      }
-    }
-
-    checkAuth()
+    setIsLoaded(true)
   }, [])
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-rose-500"></div>
-      </div>
-    )
-  }
 
   return (
     <>
@@ -69,21 +25,14 @@ export default function Home() {
               animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 20 }}
               transition={{ duration: 0.6, ease: "easeOut" }}
             >
-              {!imageError ? (
-                <Image
-                  src="/images/identymail-logo.png"
-                  alt="Identymail"
-                  width={250}
-                  height={70}
-                  priority
-                  className="h-auto w-auto"
-                  onError={() => setImageError(true)}
-                />
-              ) : (
-                <div className="h-16 flex items-center justify-center">
-                  <h2 className="text-2xl font-bold text-rose-500">Identymail</h2>
-                </div>
-              )}
+              <Image
+                src="/images/identy-logo-transparente.png"
+                alt="Identymail"
+                width={180}
+                height={60}
+                priority
+                className="h-auto w-auto"
+              />
             </motion.div>
             <motion.p
               className="text-lg text-text/80"

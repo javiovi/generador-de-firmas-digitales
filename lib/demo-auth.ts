@@ -4,7 +4,7 @@ import Cookies from "js-cookie"
 
 // Establecer el usuario de demostración
 export function setDemoUser() {
-  Cookies.set("demo_user", "true", { expires: 1, path: "/" }) // Expira en 1 día, disponible en toda la app
+  Cookies.set("demo_user", "true", { expires: 1 }) // Expira en 1 día
 }
 
 // Verificar si es un usuario de demostración
@@ -14,6 +14,5 @@ export function isDemoUser() {
 
 // Eliminar el usuario de demostración
 export function removeDemoUser() {
-  Cookies.remove("demo_user", { path: "/" })
-  Cookies.remove("demo_mode", { path: "/" })
+  Cookies.remove("demo_user")
 }

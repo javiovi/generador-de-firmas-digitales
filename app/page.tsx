@@ -1,39 +1,56 @@
-import type { Metadata } from "next"
+"use client"
+
+import Image from "next/image"
 import SignatureGenerator from "@/components/signature-generator"
 import Navbar from "@/components/navbar"
-import { requireAuth } from "@/lib/auth"
-import { cookies } from "next/headers"
+import { motion } from "framer-motion"
+import { useEffect, useState } from "react"
 
-export const metadata: Metadata = {
-  title: "Generador de Firmas de Email",
-  description: "Crea firmas de email profesionales para tu empresa",
-}
+export default function Home() {
+  const [isLoaded, setIsLoaded] = useState(false)
 
-export default async function Home() {
-  // Verificar si hay una cookie de modo demo
-  const cookieStore = cookies()
-  const isDemoMode = cookieStore.get("demo_mode")?.value === "true"
-
-  // Solo intentamos autenticar si no estamos en modo demo
-  let user = null
-  if (!isDemoMode) {
-    user = await requireAuth()
-
-    // Si no hay usuario y no estamos en modo demo, verificamos en el middleware
-    // El middleware se encargará de la redirección si es necesario
-  }
+  useEffect(() => {
+    setIsLoaded(true)
+  }, [])
 
   return (
     <>
       <Navbar />
-      <main className="min-h-screen p-4 md:p-8 bg-gray-50">
-        <div className="max-w-6xl mx-auto">
+      <main className="container mx-auto min-h-screen bg-background px-4 py-8 md:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
           <header className="mb-8 text-center">
-            <h1 className="text-3xl md:text-4xl font-bold mb-2">Generador de Firmas de Email</h1>
-            <p className="text-gray-600">Crea firmas de email profesionales para tu empresa</p>
+            <motion.div
+              className="flex justify-center mb-2"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 20 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+            >
+              <Image
+                src="/images/identymail-logo.png"
+                alt="Identymail"
+                width={250}
+                height={70}
+                priority
+                className="h-auto w-auto"
+              />
+            </motion.div>
+            <motion.p
+              className="text-lg text-text/80"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 20 }}
+              transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+            >
+              Crea firmas de email profesionales para tu empresa en minutos
+            </motion.p>
           </header>
 
-          <SignatureGenerator />
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 30 }}
+            transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+          >
+            <SignatureGenerator />
+          </motion.div>
         </div>
       </main>
     </>

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import {
   Facebook,
   Instagram,
@@ -24,6 +24,15 @@ import {
   Loader2,
   Sun,
   Moon,
+  Palette,
+  ImageIcon,
+  LinkIcon,
+  User,
+  Building,
+  MapPin,
+  Phone,
+  Mail,
+  Globe,
 } from "lucide-react"
 import ColorPicker from "@/components/color-picker"
 import { useSignatures } from "@/hooks/use-signatures"
@@ -55,14 +64,11 @@ import TemplateSelector from "@/components/template-selector"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Switch } from "@/components/ui/switch"
 
-// Importar los nuevos componentes
+// Importar los componentes
 import SignaturePreviewWrapper from "@/components/signature-preview-wrapper"
 import ExportToImage from "@/components/export-to-image"
 import EmailClientGuides from "@/components/email-client-guides"
 import CollaborationFeatures from "@/components/collaboration-features"
-// Importar el nuevo componente EmailClientPreview
-// Añadir esta línea junto con las otras importaciones:
-
 import EmailClientPreview from "@/components/email-client-preview"
 
 export type SocialLink = {
@@ -93,8 +99,6 @@ export type SignatureData = {
 }
 
 // Componente personalizado para el icono de X (anteriormente Twitter)
-// Reemplazar la función XIcon actual con esta versión mejorada:
-
 function XIcon({ size = 24, className = "" }) {
   return (
     <svg
@@ -109,8 +113,7 @@ function XIcon({ size = 24, className = "" }) {
       strokeLinejoin="round"
       className={className}
     >
-      <path d="M4 4l16 16" />
-      <path d="M4 20L15 9l5 5L9 15z" />
+      <path d="M18 6L6 18M6 6l12 12" />
     </svg>
   )
 }
@@ -439,12 +442,6 @@ export default function SignatureGenerator() {
     })
   }
 
-  // Ahora, vamos a modificar la función generateHtmlCode para corregir los problemas mencionados
-  // Buscar la función generateHtmlCode y reemplazar el código HTML de la plantilla clásica:
-
-  // Añadir esta función para calcular la rotación de tono para los iconos
-  // Añadir esta función justo antes de la función generateHtmlCode:
-
   const getHueRotation = (hexColor: string): number => {
     // Convertir hex a RGB
     const r = Number.parseInt(hexColor.slice(1, 3), 16) / 255
@@ -550,8 +547,8 @@ export default function SignatureGenerator() {
                     svgIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${signatureData.primaryColor}" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>`
                     break
                   case "twitter":
-                    // Icono de X mejorado
-                    svgIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${signatureData.primaryColor}" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4l16 16" /><path d="M4 20L15 9l5 5L9 15z" /></svg>`
+                    // Icono de X actualizado
+                    svgIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${signatureData.primaryColor}" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12"></path></svg>`
                     break
                 }
                 return `
@@ -908,7 +905,7 @@ export default function SignatureGenerator() {
                           svgIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${signatureData.primaryColor}" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>`
                           break
                         case "twitter":
-                          svgIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${signatureData.primaryColor}" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4l16 16" /><path d="M4 20L15 9l5 5L9 15z" /></svg>`
+                          svgIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${signatureData.primaryColor}" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12"></path></svg>`
                           break
                       }
                       return `
@@ -1194,9 +1191,9 @@ export default function SignatureGenerator() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
       <div className="lg:col-span-2">
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-2">
-            <h2 className="text-xl font-semibold">
+            <h2 className="text-2xl font-semibold">
               {currentSignatureId ? `Editando: ${signatureName}` : "Nueva Firma"}
             </h2>
             {currentSignatureId && <span className="text-sm text-muted-foreground">{signatureTitle}</span>}
@@ -1222,6 +1219,7 @@ export default function SignatureGenerator() {
                       value={signatureName}
                       onChange={(e) => setSignatureName(e.target.value)}
                       placeholder="Ej: Firma Corporativa"
+                      className="border-neutral bg-white focus:border-primary focus:ring-primary"
                     />
                   </div>
                   <div className="space-y-2">
@@ -1231,14 +1229,25 @@ export default function SignatureGenerator() {
                       value={signatureTitle}
                       onChange={(e) => setSignatureTitle(e.target.value)}
                       placeholder="Ej: Para uso en comunicaciones oficiales"
+                      className="border-neutral bg-white focus:border-primary focus:ring-primary"
                     />
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button variant="outline" onClick={() => setSaveDialogOpen(false)}>
+                  <Button
+                    variant="outline"
+                    className="border-neutral text-text hover:bg-neutral/20"
+                    onClick={() => setSaveDialogOpen(false)}
+                  >
                     Cancelar
                   </Button>
-                  <Button onClick={handleSaveSignature}>{currentSignatureId ? "Actualizar" : "Guardar"}</Button>
+                  <Button
+                    type="submit"
+                    className="bg-primary text-white hover:bg-primary/90"
+                    onClick={handleSaveSignature}
+                  >
+                    {currentSignatureId ? "Actualizar" : "Guardar"}
+                  </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
@@ -1267,7 +1276,7 @@ export default function SignatureGenerator() {
                       {signatures.map((signature) => (
                         <div
                           key={signature.id}
-                          className="flex items-center justify-between p-3 border rounded-md hover:bg-muted/50 cursor-pointer"
+                          className="flex items-center justify-between p-3 border rounded-md hover:bg-muted/50 cursor-pointer transition-colors"
                           onClick={() => handleLoadSignature(signature)}
                         >
                           <div>
@@ -1313,7 +1322,11 @@ export default function SignatureGenerator() {
                   )}
                 </div>
                 <DialogFooter>
-                  <Button variant="outline" onClick={() => setLoadDialogOpen(false)}>
+                  <Button
+                    variant="outline"
+                    className="border-neutral text-text hover:bg-neutral/20"
+                    onClick={() => setLoadDialogOpen(false)}
+                  >
                     Cerrar
                   </Button>
                   <Button onClick={handleNewSignature} className="flex items-center gap-1">
@@ -1326,18 +1339,41 @@ export default function SignatureGenerator() {
           </div>
         </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="template">Plantilla</TabsTrigger>
-            <TabsTrigger value="editor">Editor</TabsTrigger>
-            <TabsTrigger value="code">Exportar</TabsTrigger>
-            <TabsTrigger value="collaboration">Colaboración</TabsTrigger>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-8">
+          <TabsList className="grid w-full grid-cols-4 mb-6">
+            <TabsTrigger value="template" className="text-sm">
+              <div className="flex items-center gap-1">
+                <Palette size={16} />
+                <span>Plantilla</span>
+              </div>
+            </TabsTrigger>
+            <TabsTrigger value="editor" className="text-sm">
+              <div className="flex items-center gap-1">
+                <Edit size={16} />
+                <span>Editor</span>
+              </div>
+            </TabsTrigger>
+            <TabsTrigger value="code" className="text-sm">
+              <div className="flex items-center gap-1">
+                <Download size={16} />
+                <span>Exportar</span>
+              </div>
+            </TabsTrigger>
+            <TabsTrigger value="collaboration" className="text-sm">
+              <div className="flex items-center gap-1">
+                <LinkIcon size={16} />
+                <span>Colaboración</span>
+              </div>
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="template" className="space-y-6">
-            <Card>
-              <CardContent className="pt-6">
-                <h2 className="text-xl font-semibold mb-4">Selecciona una Plantilla</h2>
+            <Card className="shadow-card">
+              <CardHeader>
+                <CardTitle>Selecciona una Plantilla</CardTitle>
+                <CardDescription>Elige el diseño que mejor se adapte a tus necesidades</CardDescription>
+              </CardHeader>
+              <CardContent>
                 <TemplateSelector
                   templates={TEMPLATES}
                   selectedTemplate={selectedTemplate}
@@ -1348,200 +1384,146 @@ export default function SignatureGenerator() {
           </TabsContent>
 
           <TabsContent value="editor" className="space-y-6">
-            <Card>
-              <CardContent className="pt-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <h2 className="text-xl font-semibold">Información Personal</h2>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="name">Nombre Completo</Label>
-                      <Input id="name" name="name" value={signatureData.name} onChange={handleInputChange} />
+            <Card className="shadow-card">
+              <CardHeader>
+                <CardTitle>Información Personal</CardTitle>
+                <CardDescription>Ingresa tus datos personales y de contacto</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="space-y-6">
+                    <div className="form-group">
+                      <Label htmlFor="name" className="flex items-center gap-2 text-sm font-medium">
+                        <User size={16} /> Nombre Completo
+                      </Label>
+                      <Input
+                        id="name"
+                        name="name"
+                        value={signatureData.name}
+                        onChange={handleInputChange}
+                        className="mt-1.5 border-neutral bg-white focus:border-primary focus:ring-primary"
+                      />
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="position">Cargo</Label>
+                    <div className="form-group">
+                      <Label htmlFor="position" className="flex items-center gap-2 text-sm font-medium">
+                        <User size={16} /> Cargo
+                      </Label>
                       <Input
                         id="position"
                         name="position"
                         value={signatureData.position}
                         onChange={handleInputChange}
+                        className="mt-1.5 border-neutral bg-white focus:border-primary focus:ring-primary"
                       />
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="company">Empresa</Label>
-                      <Input id="company" name="company" value={signatureData.company} onChange={handleInputChange} />
+                    <div className="form-group">
+                      <Label htmlFor="company" className="flex items-center gap-2 text-sm font-medium">
+                        <Building size={16} /> Empresa
+                      </Label>
+                      <Input
+                        id="company"
+                        name="company"
+                        value={signatureData.company}
+                        onChange={handleInputChange}
+                        className="mt-1.5 border-neutral bg-white focus:border-primary focus:ring-primary"
+                      />
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="address">Dirección</Label>
-                      <Input id="address" name="address" value={signatureData.address} onChange={handleInputChange} />
+                    <div className="form-group">
+                      <Label htmlFor="address" className="flex items-center gap-2 text-sm font-medium">
+                        <MapPin size={16} /> Dirección
+                      </Label>
+                      <Input
+                        id="address"
+                        name="address"
+                        value={signatureData.address}
+                        onChange={handleInputChange}
+                        className="mt-1.5 border-neutral bg-white focus:border-primary focus:ring-primary"
+                      />
                     </div>
                   </div>
 
-                  <div className="space-y-4">
-                    <h2 className="text-xl font-semibold">Contacto</h2>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="phone">Teléfono</Label>
-                      <Input id="phone" name="phone" value={signatureData.phone} onChange={handleInputChange} />
+                  <div className="space-y-6">
+                    <div className="form-group">
+                      <Label htmlFor="phone" className="flex items-center gap-2 text-sm font-medium">
+                        <Phone size={16} /> Teléfono
+                      </Label>
+                      <Input
+                        id="phone"
+                        name="phone"
+                        value={signatureData.phone}
+                        onChange={handleInputChange}
+                        className="mt-1.5 border-neutral bg-white focus:border-primary focus:ring-primary"
+                      />
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
-                      <Input id="email" name="email" value={signatureData.email} onChange={handleInputChange} />
+                    <div className="form-group">
+                      <Label htmlFor="email" className="flex items-center gap-2 text-sm font-medium">
+                        <Mail size={16} /> Email
+                      </Label>
+                      <Input
+                        id="email"
+                        name="email"
+                        value={signatureData.email}
+                        onChange={handleInputChange}
+                        className="mt-1.5 border-neutral bg-white focus:border-primary focus:ring-primary"
+                      />
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="website">Sitio Web</Label>
-                      <Input id="website" name="website" value={signatureData.website} onChange={handleInputChange} />
+                    <div className="form-group">
+                      <Label htmlFor="website" className="flex items-center gap-2 text-sm font-medium">
+                        <Globe size={16} /> Sitio Web
+                      </Label>
+                      <Input
+                        id="website"
+                        name="website"
+                        value={signatureData.website}
+                        onChange={handleInputChange}
+                        className="mt-1.5 border-neutral bg-white focus:border-primary focus:ring-primary"
+                      />
                     </div>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card>
-              <CardContent className="pt-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <h2 className="text-xl font-semibold">Redes Sociales</h2>
-
-                    <div className="space-y-3">
-                      <div className="flex items-center space-x-2">
-                        <Checkbox
-                          id="facebook-enabled"
-                          checked={signatureData.socialLinks.facebook.enabled}
-                          onCheckedChange={() => handleSocialToggle("facebook")}
-                        />
-                        <Label htmlFor="facebook-enabled" className="flex items-center gap-2">
-                          <Facebook size={16} /> Facebook
-                        </Label>
+            <Card className="shadow-card">
+              <CardHeader>
+                <CardTitle>Personalización</CardTitle>
+                <CardDescription>Personaliza el aspecto visual de tu firma</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="space-y-6">
+                    <div className="form-group">
+                      <Label htmlFor="primaryColor" className="flex items-center gap-2 text-sm font-medium">
+                        <Palette size={16} /> Color Principal
+                      </Label>
+                      <div className="mt-1.5">
+                        <ColorPicker color={signatureData.primaryColor} onChange={handleColorChange} />
                       </div>
-                      {signatureData.socialLinks.facebook.enabled && (
-                        <Input
-                          id="facebook"
-                          name="socialLinks.facebook.url"
-                          value={signatureData.socialLinks.facebook.url}
-                          onChange={handleInputChange}
-                          className="mt-1"
-                        />
-                      )}
                     </div>
 
-                    <div className="space-y-3">
-                      <div className="flex items-center space-x-2">
-                        <Checkbox
-                          id="instagram-enabled"
-                          checked={signatureData.socialLinks.instagram.enabled}
-                          onCheckedChange={() => handleSocialToggle("instagram")}
-                        />
-                        <Label htmlFor="instagram-enabled" className="flex items-center gap-2">
-                          <Instagram size={16} /> Instagram
-                        </Label>
-                      </div>
-                      {signatureData.socialLinks.instagram.enabled && (
-                        <Input
-                          id="instagram"
-                          name="socialLinks.instagram.url"
-                          value={signatureData.socialLinks.instagram.url}
-                          onChange={handleInputChange}
-                          className="mt-1"
-                        />
-                      )}
-                    </div>
-
-                    <div className="space-y-3">
-                      <div className="flex items-center space-x-2">
-                        <Checkbox
-                          id="youtube-enabled"
-                          checked={signatureData.socialLinks.youtube.enabled}
-                          onCheckedChange={() => handleSocialToggle("youtube")}
-                        />
-                        <Label htmlFor="youtube-enabled" className="flex items-center gap-2">
-                          <Youtube size={16} /> YouTube
-                        </Label>
-                      </div>
-                      {signatureData.socialLinks.youtube.enabled && (
-                        <Input
-                          id="youtube"
-                          name="socialLinks.youtube.url"
-                          value={signatureData.socialLinks.youtube.url}
-                          onChange={handleInputChange}
-                          className="mt-1"
-                        />
-                      )}
-                    </div>
-
-                    <div className="space-y-3">
-                      <div className="flex items-center space-x-2">
-                        <Checkbox
-                          id="linkedin-enabled"
-                          checked={signatureData.socialLinks.linkedin.enabled}
-                          onCheckedChange={() => handleSocialToggle("linkedin")}
-                        />
-                        <Label htmlFor="linkedin-enabled" className="flex items-center gap-2">
-                          <Linkedin size={16} /> LinkedIn
-                        </Label>
-                      </div>
-                      {signatureData.socialLinks.linkedin.enabled && (
-                        <Input
-                          id="linkedin"
-                          name="socialLinks.linkedin.url"
-                          value={signatureData.socialLinks.linkedin.url}
-                          onChange={handleInputChange}
-                          className="mt-1"
-                        />
-                      )}
-                    </div>
-
-                    <div className="space-y-3">
-                      <div className="flex items-center space-x-2">
-                        <Checkbox
-                          id="twitter-enabled"
-                          checked={signatureData.socialLinks.twitter.enabled}
-                          onCheckedChange={() => handleSocialToggle("twitter")}
-                        />
-                        <Label htmlFor="twitter-enabled" className="flex items-center gap-2">
-                          <XIcon size={16} /> X (Twitter)
-                        </Label>
-                      </div>
-                      {signatureData.socialLinks.twitter.enabled && (
-                        <Input
-                          id="twitter"
-                          name="socialLinks.twitter.url"
-                          value={signatureData.socialLinks.twitter.url}
-                          onChange={handleInputChange}
-                          className="mt-1"
-                        />
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <h2 className="text-xl font-semibold">Personalización</h2>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="primaryColor">Color Principal</Label>
-                      <ColorPicker color={signatureData.primaryColor} onChange={handleColorChange} />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="logoUpload">Logo de la Empresa</Label>
-                      <div className="flex items-center gap-2">
+                    <div className="form-group">
+                      <Label htmlFor="logoUpload" className="flex items-center gap-2 text-sm font-medium">
+                        <ImageIcon size={16} /> Logo de la Empresa
+                      </Label>
+                      <div className="flex items-center gap-2 mt-1.5">
                         <Input
                           id="logoUpload"
                           type="file"
                           accept="image/png,image/jpeg,image/jpg,image/svg+xml"
                           onChange={(e) => handleFileUpload(e, "logoUrl")}
                           disabled={isUploading}
+                          className="mt-1.5 border-neutral bg-white focus:border-primary focus:ring-primary"
                         />
                         {isUploading && <Loader2 className="h-4 w-4 animate-spin" />}
                       </div>
-                      <p className="text-xs text-muted-foreground">Formatos aceptados: PNG, JPG, SVG</p>
+                      <p className="text-xs text-muted-foreground mt-1">Formatos aceptados: PNG, JPG, SVG</p>
                       {signatureData.logoUrl && signatureData.logoUrl.startsWith("http") && (
-                        <div className="mt-2">
+                        <div className="mt-3 p-2 border rounded-md bg-gray-50">
                           <img
                             src={signatureData.logoUrl || "/placeholder.svg"}
                             alt="Logo Preview"
@@ -1550,28 +1532,150 @@ export default function SignatureGenerator() {
                         </div>
                       )}
                     </div>
+                  </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="photoUpload">Foto de Perfil</Label>
-                      <div className="flex items-center gap-2">
+                  <div className="space-y-6">
+                    <div className="form-group">
+                      <Label htmlFor="photoUpload" className="flex items-center gap-2 text-sm font-medium">
+                        <User size={16} /> Foto de Perfil
+                      </Label>
+                      <div className="flex items-center gap-2 mt-1.5">
                         <Input
                           id="photoUpload"
                           type="file"
                           accept="image/*"
                           onChange={(e) => handleFileUpload(e, "photoUrl")}
                           disabled={isUploading}
+                          className="mt-1.5 border-neutral bg-white focus:border-primary focus:ring-primary"
                         />
                         {isUploading && <Loader2 className="h-4 w-4 animate-spin" />}
                       </div>
                       {signatureData.photoUrl && signatureData.photoUrl.startsWith("http") && (
-                        <div className="mt-2">
-                          <img
-                            src={signatureData.photoUrl || "/placeholder.svg"}
-                            alt="Photo Preview"
-                            className="h-16 w-16 object-cover rounded-full"
-                          />
+                        <div className="mt-3 flex justify-center">
+                          <div
+                            className="w-24 h-24 rounded-full overflow-hidden border-4"
+                            style={{ borderColor: signatureData.primaryColor }}
+                          >
+                            <img
+                              src={signatureData.photoUrl || "/placeholder.svg"}
+                              alt="Photo Preview"
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
                         </div>
                       )}
+                    </div>
+
+                    <div className="form-group">
+                      <Label className="flex items-center gap-2 text-sm font-medium mb-3">
+                        <LinkIcon size={16} /> Redes Sociales
+                      </Label>
+                      <div className="space-y-4 border rounded-md p-4 bg-gray-50">
+                        <div className="flex items-center space-x-2">
+                          <Checkbox
+                            id="facebook-enabled"
+                            checked={signatureData.socialLinks.facebook.enabled}
+                            onCheckedChange={() => handleSocialToggle("facebook")}
+                          />
+                          <Label htmlFor="facebook-enabled" className="flex items-center gap-2 cursor-pointer">
+                            <Facebook size={16} className="text-blue-600" /> Facebook
+                          </Label>
+                        </div>
+                        {signatureData.socialLinks.facebook.enabled && (
+                          <Input
+                            id="facebook"
+                            name="socialLinks.facebook.url"
+                            value={signatureData.socialLinks.facebook.url}
+                            onChange={handleInputChange}
+                            className="mt-1 border-neutral bg-white focus:border-primary focus:ring-primary"
+                            placeholder="https://facebook.com/tuempresa"
+                          />
+                        )}
+
+                        <div className="flex items-center space-x-2">
+                          <Checkbox
+                            id="instagram-enabled"
+                            checked={signatureData.socialLinks.instagram.enabled}
+                            onCheckedChange={() => handleSocialToggle("instagram")}
+                          />
+                          <Label htmlFor="instagram-enabled" className="flex items-center gap-2 cursor-pointer">
+                            <Instagram size={16} className="text-pink-600" /> Instagram
+                          </Label>
+                        </div>
+                        {signatureData.socialLinks.instagram.enabled && (
+                          <Input
+                            id="instagram"
+                            name="socialLinks.instagram.url"
+                            value={signatureData.socialLinks.instagram.url}
+                            onChange={handleInputChange}
+                            className="mt-1 border-neutral bg-white focus:border-primary focus:ring-primary"
+                            placeholder="https://instagram.com/tuempresa"
+                          />
+                        )}
+
+                        <div className="flex items-center space-x-2">
+                          <Checkbox
+                            id="linkedin-enabled"
+                            checked={signatureData.socialLinks.linkedin.enabled}
+                            onCheckedChange={() => handleSocialToggle("linkedin")}
+                          />
+                          <Label htmlFor="linkedin-enabled" className="flex items-center gap-2 cursor-pointer">
+                            <Linkedin size={16} className="text-blue-700" /> LinkedIn
+                          </Label>
+                        </div>
+                        {signatureData.socialLinks.linkedin.enabled && (
+                          <Input
+                            id="linkedin"
+                            name="socialLinks.linkedin.url"
+                            value={signatureData.socialLinks.linkedin.url}
+                            onChange={handleInputChange}
+                            className="mt-1 border-neutral bg-white focus:border-primary focus:ring-primary"
+                            placeholder="https://linkedin.com/in/tunombre"
+                          />
+                        )}
+
+                        <div className="flex items-center space-x-2">
+                          <Checkbox
+                            id="twitter-enabled"
+                            checked={signatureData.socialLinks.twitter.enabled}
+                            onCheckedChange={() => handleSocialToggle("twitter")}
+                          />
+                          <Label htmlFor="twitter-enabled" className="flex items-center gap-2 cursor-pointer">
+                            <XIcon size={16} /> X (Twitter)
+                          </Label>
+                        </div>
+                        {signatureData.socialLinks.twitter.enabled && (
+                          <Input
+                            id="twitter"
+                            name="socialLinks.twitter.url"
+                            value={signatureData.socialLinks.twitter.url}
+                            onChange={handleInputChange}
+                            className="mt-1 border-neutral bg-white focus:border-primary focus:ring-primary"
+                            placeholder="https://x.com/tuempresa"
+                          />
+                        )}
+
+                        <div className="flex items-center space-x-2">
+                          <Checkbox
+                            id="youtube-enabled"
+                            checked={signatureData.socialLinks.youtube.enabled}
+                            onCheckedChange={() => handleSocialToggle("youtube")}
+                          />
+                          <Label htmlFor="youtube-enabled" className="flex items-center gap-2 cursor-pointer">
+                            <Youtube size={16} className="text-red-600" /> YouTube
+                          </Label>
+                        </div>
+                        {signatureData.socialLinks.youtube.enabled && (
+                          <Input
+                            id="youtube"
+                            name="socialLinks.youtube.url"
+                            value={signatureData.socialLinks.youtube.url}
+                            onChange={handleInputChange}
+                            className="mt-1 border-neutral bg-white focus:border-primary focus:ring-primary"
+                            placeholder="https://youtube.com/c/tuempresa"
+                          />
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1580,7 +1684,7 @@ export default function SignatureGenerator() {
           </TabsContent>
 
           <TabsContent value="code" className="space-y-6">
-            <Card>
+            <Card className="shadow-card">
               <CardContent className="pt-6">
                 <Tabs value={exportTab} onValueChange={setExportTab}>
                   <TabsList className="grid w-full grid-cols-4 mb-4">
@@ -1619,7 +1723,7 @@ export default function SignatureGenerator() {
                               htmlCodeRef.current.value = generateHtmlCode(false, inlineStyles)
                             }
                           }}
-                          className="flex items-center gap-1"
+                          className="flex items-center gap-1 border-neutral text-text hover:bg-neutral/20"
                         >
                           <Sun size={16} />
                           Modo Claro
@@ -1632,7 +1736,7 @@ export default function SignatureGenerator() {
                               htmlCodeRef.current.value = generateHtmlCode(true, inlineStyles)
                             }
                           }}
-                          className="flex items-center gap-1"
+                          className="flex items-center gap-1 border-neutral text-text hover:bg-neutral/20"
                         >
                           <Moon size={16} />
                           Modo Oscuro
@@ -1641,7 +1745,7 @@ export default function SignatureGenerator() {
                           variant="outline"
                           size="sm"
                           onClick={copyHtmlToClipboard}
-                          className="flex items-center gap-1"
+                          className="flex items-center gap-1 border-neutral text-text hover:bg-neutral/20"
                         >
                           {copied ? <Check size={16} /> : <Copy size={16} />}
                           {copied ? "Copiado" : "Copiar"}
@@ -1650,7 +1754,7 @@ export default function SignatureGenerator() {
                           variant="outline"
                           size="sm"
                           onClick={downloadHtmlFile}
-                          className="flex items-center gap-1"
+                          className="flex items-center gap-1 border-neutral text-text hover:bg-neutral/20"
                         >
                           <Download size={16} />
                           Descargar
@@ -1698,22 +1802,28 @@ export default function SignatureGenerator() {
       </div>
 
       <div className="lg:col-span-1">
-        <div className="sticky top-4">
+        <div className="sticky top-24">
           <h2 className="text-xl font-semibold mb-4">Vista Previa</h2>
-          <SignaturePreviewWrapper data={signatureData} />
-
-          <div className="mt-6">
-            <h3 className="text-lg font-medium mb-2">Instrucciones</h3>
-            <ol className="list-decimal pl-5 space-y-2 text-sm">
-              <li>Selecciona una plantilla que se ajuste a tus necesidades</li>
-              <li>Personaliza tu firma con tus datos e imágenes</li>
-              <li>Activa o desactiva las redes sociales que desees mostrar</li>
-              <li>Ajusta los colores según tus preferencias</li>
-              <li>Guarda tu firma para usarla más tarde</li>
-              <li>Ve a la pestaña "Exportar" para obtener el código HTML o imagen</li>
-              <li>Sigue las guías para añadir tu firma a tu cliente de correo favorito</li>
-            </ol>
+          <div className="preview-container mb-6">
+            <SignaturePreviewWrapper data={signatureData} />
           </div>
+
+          <Card className="shadow-card">
+            <CardHeader>
+              <CardTitle className="text-base">Instrucciones</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ol className="list-decimal pl-5 space-y-2 text-sm">
+                <li>Selecciona una plantilla que se ajuste a tus necesidades</li>
+                <li>Personaliza tu firma con tus datos e imágenes</li>
+                <li>Activa o desactiva las redes sociales que desees mostrar</li>
+                <li>Ajusta los colores según tus preferencias</li>
+                <li>Guarda tu firma para usarla más tarde</li>
+                <li>Ve a la pestaña "Exportar" para obtener el código HTML o imagen</li>
+                <li>Sigue las guías para añadir tu firma a tu cliente de correo favorito</li>
+              </ol>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

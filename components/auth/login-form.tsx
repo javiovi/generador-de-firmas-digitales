@@ -5,6 +5,7 @@ import type React from "react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -85,63 +86,81 @@ export default function LoginForm() {
   }
 
   return (
-    <Card>
-      <CardContent className="pt-6">
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Correo Electrónico</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="tu@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
+    <div className="mx-auto w-full max-w-md rounded-2xl bg-white/80 backdrop-blur-sm p-8 shadow-xl border border-rose-100">
+      <div className="mb-8 flex justify-center">
+        <Image
+          src="/images/identymail-logo.png"
+          alt="Identymail"
+          width={220}
+          height={70}
+          priority
+          className="h-auto w-auto"
+        />
+      </div>
 
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="password">Contraseña</Label>
-              <Link href="/reset-password" className="text-sm text-primary hover:underline">
-                ¿Olvidaste tu contraseña?
+      <Card className="border-none shadow-none bg-transparent">
+        <CardContent className="pt-6 px-0">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-2">
+              <Label htmlFor="email">Correo Electrónico</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="tu@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password">Contraseña</Label>
+                <Link href="/reset-password" className="text-sm text-rose-500 hover:underline">
+                  ¿Olvidaste tu contraseña?
+                </Link>
+              </div>
+              <Input
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+
+            <Button type="submit" className="w-full bg-rose-500 text-white hover:bg-rose-600" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Iniciando sesión...
+                </>
+              ) : (
+                "Iniciar Sesión"
+              )}
+            </Button>
+
+            <div className="text-center">
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full border-gray-300 hover:bg-gray-50"
+                onClick={handleDemoLogin}
+              >
+                Usar cuenta de demostración
+              </Button>
+            </div>
+
+            <div className="text-center text-sm">
+              ¿No tienes una cuenta?{" "}
+              <Link href="/register" className="text-sky-500 hover:underline">
+                Regístrate
               </Link>
             </div>
-            <Input
-              id="password"
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Iniciando sesión...
-              </>
-            ) : (
-              "Iniciar Sesión"
-            )}
-          </Button>
-
-          <div className="text-center">
-            <Button type="button" variant="outline" className="w-full" onClick={handleDemoLogin}>
-              Usar cuenta de demostración
-            </Button>
-          </div>
-
-          <div className="text-center text-sm">
-            ¿No tienes una cuenta?{" "}
-            <Link href="/register" className="text-primary hover:underline">
-              Regístrate
-            </Link>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
   )
 }

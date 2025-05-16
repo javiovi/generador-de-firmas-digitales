@@ -200,8 +200,7 @@ export default function SignaturePreview({ data, darkMode = false }: SignaturePr
                         strokeLinecap="round"
                         strokeLinejoin="round"
                       >
-                        <path d="M4 4l16 16" />
-                        <path d="M4 20L15 9l5 5L9 15z" />
+                        <path d="M18 6L6 18M6 6l12 12" />
                       </svg>
                     </a>
                   )

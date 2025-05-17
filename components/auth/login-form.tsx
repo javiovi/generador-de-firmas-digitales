@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
@@ -20,8 +20,25 @@ export default function LoginForm() {
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const [loginSuccess, setLoginSuccess] = useState(false)
   const router = useRouter()
   const { t, changeLanguage, language } = useLanguage()
+
+  // Efecto para manejar la redirección después de un login exitoso
+  useEffect(() => {
+    if (loginSuccess) {
+      // Primero intentamos con router.push
+      router.push("/")
+
+      // Como respaldo, usamos una redirección forzada después de un breve retraso
+      const redirectTimer = setTimeout(() => {
+        console.log("Forzando redirección a la página principal")
+        window.location.href = "/"
+      }, 1500)
+
+      return () => clearTimeout(redirectTimer)
+    }
+  }, [loginSuccess, router])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -55,8 +72,8 @@ export default function LoginForm() {
           description: t("successLoginMessage"),
         })
 
-        // Modificado: Usar router.push en lugar de window.location
-        router.push("/")
+        // Marcar el login como exitoso para activar la redirección
+        setLoginSuccess(true)
         return
       }
 
@@ -74,15 +91,8 @@ export default function LoginForm() {
         description: t("successLoginMessage"),
       })
 
-      // Modificado: Usar router.push en lugar de window.location
-      router.push("/")
-
-      // Forzar un refresco completo después de un breve retraso si la navegación no funciona
-      setTimeout(() => {
-        if (window.location.pathname === "/login") {
-          window.location.href = "/"
-        }
-      }, 1000)
+      // Marcar el login como exitoso para activar la redirección
+      setLoginSuccess(true)
     } catch (error: any) {
       console.error("Error de inicio de sesión:", error)
       toast({
@@ -156,11 +166,20 @@ export default function LoginForm() {
               </div>
             </div>
 
-            <Button type="submit" className="w-full bg-rose-500 text-white hover:bg-rose-600" disabled={isLoading}>
+            <Button
+              type="submit"
+              className="w-full bg-rose-500 text-white hover:bg-rose-600"
+              disabled={isLoading || loginSuccess}
+            >
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   {t("loggingIn")}
+                </>
+              ) : loginSuccess ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {t("redirecting")}
                 </>
               ) : (
                 t("login")

@@ -24,6 +24,7 @@ export const translations = {
     sending: "Sending...",
     updatePassword: "Update Password",
     updating: "Updating...",
+    redirecting: "Redirecting...", // New translation
 
     // Home
     createProfessionalSignatures: "Create professional email signatures for your company in minutes",
@@ -161,6 +162,7 @@ export const translations = {
     sending: "Enviando...",
     updatePassword: "Actualizar Contraseña",
     updating: "Actualizando...",
+    redirecting: "Redirigiendo...", // New translation
 
     // Home
     createProfessionalSignatures: "Crea firmas de email profesionales para tu empresa en minutos",

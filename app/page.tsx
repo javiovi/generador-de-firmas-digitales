@@ -1,6 +1,6 @@
 "use client"
 
-import Image from "next/image"
+import SafeImage from "@/components/ui/safe-image"
 import SignatureGenerator from "@/components/signature-generator"
 import Navbar from "@/components/navbar"
 import { motion } from "framer-motion"
@@ -27,7 +27,7 @@ export default function Home() {
               animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 20 }}
               transition={{ duration: 0.6, ease: "easeOut" }}
             >
-              <Image
+              <SafeImage
                 src="/images/identy-logo-transparente.png"
                 alt="Identymail"
                 width={250}

@@ -9,12 +9,22 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+    ],
     domains: [
       'cdn-icons-png.flaticon.com', 
       'placehold.co',
-      'public.blob.vercel-storage.com', // Añadido dominio de Vercel Blob
-      'lfqxvvbcxvwfvvvnxvxl.supabase.co', // Añadido dominio de Supabase Storage
-      'vercel-blob.com' // Añadido dominio alternativo de Vercel Blob
+      'public.blob.vercel-storage.com',
+      'lfqxvvbcxvwfvvvnxvxl.supabase.co',
+      'vercel-blob.com',
+      'blob.vercel-storage.com',
+      'vercel-storage.com',
+      'vercel-blob-storage.com',
+      'blob.vercel.app'
     ],
     unoptimized: true,
   },

@@ -1829,5 +1829,5 @@ export default function SignatureGenerator() {
         </div>
       </div>
     </div>
-  )
+  )\
 }

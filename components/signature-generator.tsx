@@ -63,6 +63,7 @@ import { TemplateType, TEMPLATES, getTemplateById, getDefaultSignatureData } fro
 import TemplateSelector from "@/components/template-selector"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Switch } from "@/components/ui/switch"
+import { useLanguage } from "@/lib/i18n/language-context"
 
 // Importar los componentes
 import SignaturePreviewWrapper from "@/components/signature-preview-wrapper"
@@ -119,6 +120,7 @@ function XIcon({ size = 24, className = "" }) {
 }
 
 export default function SignatureGenerator() {
+  const { t } = useLanguage()
   const [signatureData, setSignatureData] = useState<SignatureData>(getDefaultSignatureData(TemplateType.CLASSIC))
   const [copied, setCopied] = useState(false)
   const [activeTab, setActiveTab] = useState("editor")
@@ -226,14 +228,14 @@ export default function SignatureGenerator() {
         }))
 
         toast({
-          title: "Imagen subida correctamente",
-          description: "La imagen se ha subido y guardado en el servidor.",
+          title: t("imageUploadedSuccessfully"),
+          description: t("imageUploadedAndSaved"),
         })
       } catch (error) {
         console.error("Error uploading file:", error)
         toast({
-          title: "Error al subir la imagen",
-          description: "No se pudo subir la imagen. Inténtalo de nuevo.",
+          title: t("imageUploadError"),
+          description: t("imageUploadFailed"),
           variant: "destructive",
         })
       } finally {
@@ -257,8 +259,8 @@ export default function SignatureGenerator() {
       setTimeout(() => setCopied(false), 2000)
 
       toast({
-        title: "Código copiado",
-        description: "El código HTML ha sido copiado al portapapeles.",
+        title: t("codeCopied"),
+        description: t("htmlCodeCopied"),
       })
     }
   }
@@ -277,8 +279,8 @@ export default function SignatureGenerator() {
       URL.revokeObjectURL(url)
 
       toast({
-        title: "Archivo descargado",
-        description: "El archivo HTML ha sido descargado.",
+        title: t("fileDownloaded"),
+        description: t("htmlFileDownloaded"),
       })
     }
   }
@@ -286,8 +288,8 @@ export default function SignatureGenerator() {
   const handleSaveSignature = async () => {
     if (!signatureName) {
       toast({
-        title: "Nombre requerido",
-        description: "Por favor, ingresa un nombre para la firma.",
+        title: t("nameRequired"),
+        description: t("enterSignatureName"),
         variant: "destructive",
       })
       return
@@ -306,8 +308,8 @@ export default function SignatureGenerator() {
         )
 
         toast({
-          title: "Firma actualizada",
-          description: "La firma ha sido actualizada correctamente.",
+          title: t("signatureUpdated"),
+          description: t("signatureUpdatedSuccessfully"),
         })
       } else {
         // Crear nueva firma
@@ -324,8 +326,8 @@ export default function SignatureGenerator() {
         }
 
         toast({
-          title: "Firma guardada",
-          description: "La firma ha sido guardada correctamente.",
+          title: t("signatureSaved"),
+          description: t("signatureSavedSuccessfully"),
         })
       }
 
@@ -334,8 +336,8 @@ export default function SignatureGenerator() {
     } catch (error) {
       console.error("Error saving signature:", error)
       toast({
-        title: "Error al guardar",
-        description: "No se pudo guardar la firma. Inténtalo de nuevo.",
+        title: t("saveError"),
+        description: t("saveSignatureFailed"),
         variant: "destructive",
       })
     }
@@ -385,8 +387,8 @@ export default function SignatureGenerator() {
         setCurrentSignatureId(loadedSignature.id)
 
         toast({
-          title: "Firma cargada",
-          description: "La firma ha sido cargada correctamente.",
+          title: t("signatureLoaded"),
+          description: t("signatureLoadedSuccessfully"),
         })
       }
 
@@ -394,8 +396,8 @@ export default function SignatureGenerator() {
     } catch (error) {
       console.error("Error loading signature:", error)
       toast({
-        title: "Error al cargar",
-        description: "No se pudo cargar la firma. Inténtalo de nuevo.",
+        title: t("loadError"),
+        description: t("loadSignatureFailed"),
         variant: "destructive",
       })
     }
@@ -416,14 +418,14 @@ export default function SignatureGenerator() {
       await loadSignatures()
 
       toast({
-        title: "Firma eliminada",
-        description: "La firma ha sido eliminada correctamente.",
+        title: t("signatureDeleted"),
+        description: t("signatureDeletedSuccessfully"),
       })
     } catch (error) {
       console.error("Error deleting signature:", error)
       toast({
-        title: "Error al eliminar",
-        description: "No se pudo eliminar la firma. Inténtalo de nuevo.",
+        title: t("deleteError"),
+        description: t("deleteSignatureFailed"),
         variant: "destructive",
       })
     }
@@ -437,8 +439,8 @@ export default function SignatureGenerator() {
     setCurrentSignatureId(null)
 
     toast({
-      title: "Nueva firma",
-      description: "Se ha creado una nueva firma en blanco.",
+      title: t("newSignature"),
+      description: t("newBlankSignature"),
     })
   }
 
@@ -1194,7 +1196,7 @@ export default function SignatureGenerator() {
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-2">
             <h2 className="text-2xl font-semibold">
-              {currentSignatureId ? `Editando: ${signatureName}` : "Nueva Firma"}
+              {currentSignatureId ? `${t("editing")}: ${signatureName}` : t("newSignature")}
             </h2>
             {currentSignatureId && <span className="text-sm text-muted-foreground">{signatureTitle}</span>}
           </div>
@@ -1203,32 +1205,32 @@ export default function SignatureGenerator() {
               <DialogTrigger asChild>
                 <Button variant="outline" className="flex items-center gap-1">
                   <Save size={16} />
-                  Guardar
+                  {t("save")}
                 </Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Guardar Firma</DialogTitle>
-                  <DialogDescription>Ingresa un nombre y título opcional para tu firma.</DialogDescription>
+                  <DialogTitle>{t("save")}</DialogTitle>
+                  <DialogDescription>{t("enterNameAndTitle")}</DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4 py-4">
                   <div className="space-y-2">
-                    <Label htmlFor="signatureName">Nombre de la Firma *</Label>
+                    <Label htmlFor="signatureName">{t("name")} *</Label>
                     <Input
                       id="signatureName"
                       value={signatureName}
                       onChange={(e) => setSignatureName(e.target.value)}
-                      placeholder="Ej: Firma Corporativa"
+                      placeholder={t("corporateSignature")}
                       className="border-neutral bg-white focus:border-primary focus:ring-primary"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="signatureTitle">Título/Descripción (opcional)</Label>
+                    <Label htmlFor="signatureTitle">{t("titleOptional")}</Label>
                     <Input
                       id="signatureTitle"
                       value={signatureTitle}
                       onChange={(e) => setSignatureTitle(e.target.value)}
-                      placeholder="Ej: Para uso en comunicaciones oficiales"
+                      placeholder={t("officialCommunications")}
                       className="border-neutral bg-white focus:border-primary focus:ring-primary"
                     />
                   </div>
@@ -1239,14 +1241,14 @@ export default function SignatureGenerator() {
                     className="border-neutral text-text hover:bg-neutral/20"
                     onClick={() => setSaveDialogOpen(false)}
                   >
-                    Cancelar
+                    {t("cancel")}
                   </Button>
                   <Button
                     type="submit"
                     className="bg-primary text-white hover:bg-primary/90"
                     onClick={handleSaveSignature}
                   >
-                    {currentSignatureId ? "Actualizar" : "Guardar"}
+                    {currentSignatureId ? t("update") : t("save")}
                   </Button>
                 </DialogFooter>
               </DialogContent>
@@ -1256,13 +1258,13 @@ export default function SignatureGenerator() {
               <DialogTrigger asChild>
                 <Button variant="outline" className="flex items-center gap-1">
                   <List size={16} />
-                  Cargar
+                  {t("load")}
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-md">
                 <DialogHeader>
-                  <DialogTitle>Cargar Firma</DialogTitle>
-                  <DialogDescription>Selecciona una firma guardada para cargarla.</DialogDescription>
+                  <DialogTitle>{t("loadSignature")}</DialogTitle>
+                  <DialogDescription>{t("selectSavedSignature")}</DialogDescription>
                 </DialogHeader>
                 <div className="py-4">
                   {isLoading ? (
@@ -1270,7 +1272,7 @@ export default function SignatureGenerator() {
                       <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
                     </div>
                   ) : signatures.length === 0 ? (
-                    <div className="text-center py-8 text-muted-foreground">No hay firmas guardadas.</div>
+                    <div className="text-center py-8 text-muted-foreground">{t("noSavedSignatures")}</div>
                   ) : (
                     <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2">
                       {signatures.map((signature) => (
@@ -1302,15 +1304,15 @@ export default function SignatureGenerator() {
                               </AlertDialogTrigger>
                               <AlertDialogContent>
                                 <AlertDialogHeader>
-                                  <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+                                  <AlertDialogTitle>{t("areYouSure")}</AlertDialogTitle>
                                   <AlertDialogDescription>
-                                    Esta acción no se puede deshacer. Se eliminará permanentemente la firma.
+                                    {t("actionCannotBeUndone")}
                                   </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
-                                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                  <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
                                   <AlertDialogAction onClick={() => handleDeleteSignature(signature.id)}>
-                                    Eliminar
+                                    {t("delete")}
                                   </AlertDialogAction>
                                 </AlertDialogFooter>
                               </AlertDialogContent>
@@ -1327,11 +1329,11 @@ export default function SignatureGenerator() {
                     className="border-neutral text-text hover:bg-neutral/20"
                     onClick={() => setLoadDialogOpen(false)}
                   >
-                    Cerrar
+                    {t("close")}
                   </Button>
                   <Button onClick={handleNewSignature} className="flex items-center gap-1">
                     <Plus size={16} />
-                    Nueva Firma
+                    {t("newSignature")}
                   </Button>
                 </DialogFooter>
               </DialogContent>
@@ -1344,25 +1346,25 @@ export default function SignatureGenerator() {
             <TabsTrigger value="template" className="text-sm">
               <div className="flex items-center gap-1">
                 <Palette size={16} />
-                <span>Plantilla</span>
+                <span>{t("template")}</span>
               </div>
             </TabsTrigger>
             <TabsTrigger value="editor" className="text-sm">
               <div className="flex items-center gap-1">
                 <Edit size={16} />
-                <span>Editor</span>
+                <span>{t("editor")}</span>
               </div>
             </TabsTrigger>
             <TabsTrigger value="code" className="text-sm">
               <div className="flex items-center gap-1">
                 <Download size={16} />
-                <span>Exportar</span>
+                <span>{t("export")}</span>
               </div>
             </TabsTrigger>
             <TabsTrigger value="collaboration" className="text-sm">
               <div className="flex items-center gap-1">
                 <LinkIcon size={16} />
-                <span>Colaboración</span>
+                <span>{t("collaboration")}</span>
               </div>
             </TabsTrigger>
           </TabsList>
@@ -1370,8 +1372,8 @@ export default function SignatureGenerator() {
           <TabsContent value="template" className="space-y-6">
             <Card className="shadow-card">
               <CardHeader>
-                <CardTitle>Selecciona una Plantilla</CardTitle>
-                <CardDescription>Elige el diseño que mejor se adapte a tus necesidades</CardDescription>
+                <CardTitle>{t("selectTemplate")}</CardTitle>
+                <CardDescription>{t("chooseDesignThatSuitsYou")}</CardDescription>
               </CardHeader>
               <CardContent>
                 <TemplateSelector
@@ -1386,15 +1388,15 @@ export default function SignatureGenerator() {
           <TabsContent value="editor" className="space-y-6">
             <Card className="shadow-card">
               <CardHeader>
-                <CardTitle>Información Personal</CardTitle>
-                <CardDescription>Ingresa tus datos personales y de contacto</CardDescription>
+                <CardTitle>{t("personalInfo")}</CardTitle>
+                <CardDescription>{t("enterPersonalInfo")}</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-6">
                     <div className="form-group">
                       <Label htmlFor="name" className="flex items-center gap-2 text-sm font-medium">
-                        <User size={16} /> Nombre Completo
+                        <User size={16} /> {t("fullName")}
                       </Label>
                       <Input
                         id="name"
@@ -1407,7 +1409,7 @@ export default function SignatureGenerator() {
 
                     <div className="form-group">
                       <Label htmlFor="position" className="flex items-center gap-2 text-sm font-medium">
-                        <User size={16} /> Cargo
+                        <User size={16} /> {t("position")}
                       </Label>
                       <Input
                         id="position"
@@ -1420,7 +1422,7 @@ export default function SignatureGenerator() {
 
                     <div className="form-group">
                       <Label htmlFor="company" className="flex items-center gap-2 text-sm font-medium">
-                        <Building size={16} /> Empresa
+                        <Building size={16} /> {t("company")}
                       </Label>
                       <Input
                         id="company"
@@ -1433,7 +1435,7 @@ export default function SignatureGenerator() {
 
                     <div className="form-group">
                       <Label htmlFor="address" className="flex items-center gap-2 text-sm font-medium">
-                        <MapPin size={16} /> Dirección
+                        <MapPin size={16} /> {t("address")}
                       </Label>
                       <Input
                         id="address"
@@ -1448,7 +1450,7 @@ export default function SignatureGenerator() {
                   <div className="space-y-6">
                     <div className="form-group">
                       <Label htmlFor="phone" className="flex items-center gap-2 text-sm font-medium">
-                        <Phone size={16} /> Teléfono
+                        <Phone size={16} /> {t("phone")}
                       </Label>
                       <Input
                         id="phone"
@@ -1461,7 +1463,7 @@ export default function SignatureGenerator() {
 
                     <div className="form-group">
                       <Label htmlFor="email" className="flex items-center gap-2 text-sm font-medium">
-                        <Mail size={16} /> Email
+                        <Mail size={16} /> {t("email")}
                       </Label>
                       <Input
                         id="email"
@@ -1474,7 +1476,7 @@ export default function SignatureGenerator() {
 
                     <div className="form-group">
                       <Label htmlFor="website" className="flex items-center gap-2 text-sm font-medium">
-                        <Globe size={16} /> Sitio Web
+                        <Globe size={16} /> {t("website")}
                       </Label>
                       <Input
                         id="website"
@@ -1491,15 +1493,15 @@ export default function SignatureGenerator() {
 
             <Card className="shadow-card">
               <CardHeader>
-                <CardTitle>Personalización</CardTitle>
-                <CardDescription>Personaliza el aspecto visual de tu firma</CardDescription>
+                <CardTitle>{t("personalization")}</CardTitle>
+                <CardDescription>{t("customizeVisualAspect")}</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-6">
                     <div className="form-group">
                       <Label htmlFor="primaryColor" className="flex items-center gap-2 text-sm font-medium">
-                        <Palette size={16} /> Color Principal
+                        <Palette size={16} /> {t("primaryColor")}
                       </Label>
                       <div className="mt-1.5">
                         <ColorPicker color={signatureData.primaryColor} onChange={handleColorChange} />
@@ -1508,7 +1510,7 @@ export default function SignatureGenerator() {
 
                     <div className="form-group">
                       <Label htmlFor="logoUpload" className="flex items-center gap-2 text-sm font-medium">
-                        <ImageIcon size={16} /> Logo de la Empresa
+                        <ImageIcon size={16} /> {t("companyLogo")}
                       </Label>
                       <div className="flex items-center gap-2 mt-1.5">
                         <Input
@@ -1521,7 +1523,7 @@ export default function SignatureGenerator() {
                         />
                         {isUploading && <Loader2 className="h-4 w-4 animate-spin" />}
                       </div>
-                      <p className="text-xs text-muted-foreground mt-1">Formatos aceptados: PNG, JPG, SVG</p>
+                      <p className="text-xs text-muted-foreground mt-1">{t("acceptedFormatsLogo")}</p>
                       {signatureData.logoUrl && signatureData.logoUrl.startsWith("http") && (
                         <div className="mt-3 p-2 border rounded-md bg-gray-50">
                           <img
@@ -1537,7 +1539,7 @@ export default function SignatureGenerator() {
                   <div className="space-y-6">
                     <div className="form-group">
                       <Label htmlFor="photoUpload" className="flex items-center gap-2 text-sm font-medium">
-                        <User size={16} /> Foto de Perfil
+                        <User size={16} /> {t("profilePhoto")}
                       </Label>
                       <div className="flex items-center gap-2 mt-1.5">
                         <Input
@@ -1564,11 +1566,10 @@ export default function SignatureGenerator() {
                           </div>
                         </div>
                       )}
-                    </div>
 
                     <div className="form-group">
                       <Label className="flex items-center gap-2 text-sm font-medium mb-3">
-                        <LinkIcon size={16} /> Redes Sociales
+                        <LinkIcon size={16} /> {t("socialNetworks")}
                       </Label>
                       <div className="space-y-4 border rounded-md p-4 bg-gray-50">
                         <div className="flex items-center space-x-2">
@@ -1688,19 +1689,19 @@ export default function SignatureGenerator() {
               <CardContent className="pt-6">
                 <Tabs value={exportTab} onValueChange={setExportTab}>
                   <TabsList className="grid w-full grid-cols-4 mb-4">
-                    <TabsTrigger value="html">Código HTML</TabsTrigger>
-                    <TabsTrigger value="image">Imagen</TabsTrigger>
-                    <TabsTrigger value="preview">Vista Previa</TabsTrigger>
-                    <TabsTrigger value="guides">Guías</TabsTrigger>
+                    <TabsTrigger value="html">{t("htmlCode")}</TabsTrigger>
+                    <TabsTrigger value="image">{t("image")}</TabsTrigger>
+                    <TabsTrigger value="preview">{t("preview")}</TabsTrigger>
+                    <TabsTrigger value="guides">{t("guides")}</TabsTrigger>
                   </TabsList>
 
                   <TabsContent value="html" className="space-y-4">
                     <div className="flex justify-between items-center mb-4">
-                      <h2 className="text-xl font-semibold">Código HTML</h2>
+                      <h2 className="text-xl font-semibold">{t("htmlCode")}</h2>
                       <div className="flex flex-wrap gap-2">
                         <div className="flex items-center space-x-2 mr-2">
                           <Switch id="responsive-mode" checked={isResponsive} onCheckedChange={setIsResponsive} />
-                          <Label htmlFor="responsive-mode">Responsivo</Label>
+                          <Label htmlFor="responsive-mode">{t("responsive")}</Label>
                         </div>
                         <div className="flex items-center space-x-2 mr-2">
                           <Switch
@@ -1713,7 +1714,7 @@ export default function SignatureGenerator() {
                               }
                             }}
                           />
-                          <Label htmlFor="inline-styles">Estilos Inline</Label>
+                          <Label htmlFor="inline-styles">{t("inlineStyles")}</Label>
                         </div>
                         <Button
                           variant="outline"
@@ -1726,7 +1727,7 @@ export default function SignatureGenerator() {
                           className="flex items-center gap-1 border-neutral text-text hover:bg-neutral/20"
                         >
                           <Sun size={16} />
-                          Modo Claro
+                          {t("lightMode")}
                         </Button>
                         <Button
                           variant="outline"
@@ -1739,7 +1740,7 @@ export default function SignatureGenerator() {
                           className="flex items-center gap-1 border-neutral text-text hover:bg-neutral/20"
                         >
                           <Moon size={16} />
-                          Modo Oscuro
+                          {t("darkMode")}
                         </Button>
                         <Button
                           variant="outline"
@@ -1748,7 +1749,7 @@ export default function SignatureGenerator() {
                           className="flex items-center gap-1 border-neutral text-text hover:bg-neutral/20"
                         >
                           {copied ? <Check size={16} /> : <Copy size={16} />}
-                          {copied ? "Copiado" : "Copiar"}
+                          {copied ? t("copied") : t("copy")}
                         </Button>
                         <Button
                           variant="outline"
@@ -1757,7 +1758,7 @@ export default function SignatureGenerator() {
                           className="flex items-center gap-1 border-neutral text-text hover:bg-neutral/20"
                         >
                           <Download size={16} />
-                          Descargar
+                          {t("download")}
                         </Button>
                       </div>
                     </div>
@@ -1770,10 +1771,9 @@ export default function SignatureGenerator() {
                   </TabsContent>
 
                   <TabsContent value="image" className="space-y-4">
-                    <h2 className="text-xl font-semibold mb-4">Exportar como Imagen</h2>
+                    <h2 className="text-xl font-semibold mb-4">{t("exportAsImage")}</h2>
                     <p className="text-sm text-muted-foreground mb-4">
-                      Exporta tu firma como imagen para usarla en clientes de correo que no soportan HTML o para
-                      compartirla en redes sociales.
+                      {t("exportSignatureAsImage")}
                     </p>
                     <ExportToImage signatureData={signatureData} />
                   </TabsContent>
@@ -1803,25 +1803,27 @@ export default function SignatureGenerator() {
 
       <div className="lg:col-span-1">
         <div className="sticky top-24">
-          <h2 className="text-xl font-semibold mb-4">Vista Previa</h2>
+          <h2 className="text-xl font-semibold mb-4">{t("preview")}</h2>
           <div className="preview-container mb-6">
             <SignaturePreviewWrapper data={signatureData} />
           </div>
 
           <Card className="shadow-card">
             <CardHeader>
-              <CardTitle className="text-base">Instrucciones</CardTitle>
+              <CardTitle className="text-base">{t("instructions")}</CardTitle>
             </CardHeader>
             <CardContent>
               <ol className="list-decimal pl-5 space-y-2 text-sm">
-                <li>Selecciona una plantilla que se ajuste a tus necesidades</li>
-                <li>Personaliza tu firma con tus datos e imágenes</li>
-                <li>Activa o desactiva las redes sociales que desees mostrar</li>
-                <li>Ajusta los colores según tus preferencias</li>
-                <li>Guarda tu firma para usarla más tarde</li>
-                <li>Ve a la pestaña "Exportar" para obtener el código HTML o imagen</li>
-                <li>Sigue las guías para añadir tu firma a tu cliente de correo favorito</li>
+                <li>{t("quickInstruction1")}</li>
+                <li>{t("quickInstruction2")}</li>
+                <li>{t("quickInstruction3")}</li>
+                <li>{t("quickInstruction4")}</li>
+                <li>{t("quickInstruction5")}</li>
               </ol>
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <h4 className="font-medium text-sm mb-2">{t("quickTip")}</h4>
+                <p className="text-xs text-muted-foreground">{t("quickTipText")}</p>
+              </div>
             </CardContent>
           </Card>
         </div>

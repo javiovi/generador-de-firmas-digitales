@@ -13,6 +13,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { toast } from "@/components/ui/use-toast"
 import { createBrowserSupabaseClient } from "@/lib/supabase"
 import { Loader2, Eye, EyeOff } from "lucide-react"
+import { useLanguage } from "@/lib/i18n/language-context"
 
 export default function LoginForm() {
   const [email, setEmail] = useState("")
@@ -20,14 +21,15 @@ export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const router = useRouter()
+  const { t, changeLanguage, language } = useLanguage()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (!email || !password) {
       toast({
-        title: "Error",
-        description: "Por favor, completa todos los campos",
+        title: t("errorLogin"),
+        description: t("errorLoginMessage"),
         variant: "destructive",
       })
       return
@@ -49,8 +51,8 @@ export default function LoginForm() {
         }
 
         toast({
-          title: "Inicio de sesión exitoso",
-          description: "Has iniciado sesión en la app beta",
+          title: t("successLogin"),
+          description: t("successLoginMessage"),
         })
 
         // Forzar la redirección después de un breve retraso
@@ -71,8 +73,8 @@ export default function LoginForm() {
       }
 
       toast({
-        title: "Inicio de sesión exitoso",
-        description: "Has iniciado sesión correctamente",
+        title: t("successLogin"),
+        description: t("successLoginMessage"),
       })
 
       // Forzar la redirección después de un breve retraso
@@ -82,7 +84,7 @@ export default function LoginForm() {
     } catch (error: any) {
       console.error("Error de inicio de sesión:", error)
       toast({
-        title: "Error de inicio de sesión",
+        title: t("errorLogin"),
         description: error.message || "No se pudo iniciar sesión. Verifica tus credenciales.",
         variant: "destructive",
       })
@@ -112,7 +114,7 @@ export default function LoginForm() {
         <CardContent className="pt-6 px-0">
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="email">Correo Electrónico</Label>
+              <Label htmlFor="email">{t("email")}</Label>
               <Input
                 id="email"
                 type="email"
@@ -125,9 +127,9 @@ export default function LoginForm() {
 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password">Contraseña</Label>
+                <Label htmlFor="password">{t("password")}</Label>
                 <Link href="/reset-password" className="text-sm text-rose-500 hover:underline">
-                  ¿Olvidaste tu contraseña?
+                  {t("forgotPassword")}
                 </Link>
               </div>
               <div className="relative">
@@ -156,18 +158,38 @@ export default function LoginForm() {
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Iniciando sesión...
+                  {t("loggingIn")}
                 </>
               ) : (
-                "Iniciar Sesión"
+                t("login")
               )}
             </Button>
 
             <div className="text-center text-sm">
-              ¿No tienes una cuenta?{" "}
+              {t("noAccount")}{" "}
               <Link href="/register" className="text-sky-500 hover:underline">
-                Regístrate
+                {t("signUp")}
               </Link>
+            </div>
+
+            <div className="mt-4 flex justify-center">
+              <div className="flex items-center gap-2 text-sm text-gray-500">
+                <span>{t("Change Language")}:</span>
+                <button
+                  onClick={() => changeLanguage("es")}
+                  className={`flex items-center gap-1 rounded px-2 py-1 ${language === "es" ? "bg-rose-100 text-rose-600" : "hover:bg-gray-100"}`}
+                  type="button"
+                >
+                  🇪🇸 {t("spanish")}
+                </button>
+                <button
+                  onClick={() => changeLanguage("en")}
+                  className={`flex items-center gap-1 rounded px-2 py-1 ${language === "en" ? "bg-rose-100 text-rose-600" : "hover:bg-gray-100"}`}
+                  type="button"
+                >
+                  🇬🇧 {t("english")}
+                </button>
+              </div>
             </div>
           </form>
         </CardContent>

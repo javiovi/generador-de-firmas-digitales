@@ -18,6 +18,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import Cookies from "js-cookie"
+import LanguageSelector from "@/components/language-selector"
+import { useLanguage } from "@/lib/i18n/language-context"
 
 export default function Navbar() {
   const [user, setUser] = useState<any>(null)
@@ -25,6 +27,7 @@ export default function Navbar() {
   const [isLoading, setIsLoading] = useState(true)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const router = useRouter()
+  const { t } = useLanguage()
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -76,8 +79,8 @@ export default function Navbar() {
         setUser(null)
 
         toast({
-          title: "Sesión cerrada",
-          description: "Has cerrado la sesión de demostración correctamente",
+          title: t("successLogout"),
+          description: t("successLogoutMessage"),
         })
 
         router.push("/login")
@@ -88,8 +91,8 @@ export default function Navbar() {
       await supabase.auth.signOut()
 
       toast({
-        title: "Sesión cerrada",
-        description: "Has cerrado sesión correctamente",
+        title: t("successLogout"),
+        description: t("successLogoutMessage"),
       })
 
       router.push("/login")
@@ -97,8 +100,8 @@ export default function Navbar() {
     } catch (error) {
       console.error("Error al cerrar sesión:", error)
       toast({
-        title: "Error",
-        description: "No se pudo cerrar sesión",
+        title: t("errorLogout"),
+        description: t("errorLogoutMessage"),
         variant: "destructive",
       })
     }
@@ -113,9 +116,9 @@ export default function Navbar() {
               <Image
                 src="/images/identy-logo-transparente.png"
                 alt="Identymail Logo"
-                width={180}
-                height={48}
-                className="h-12 w-auto"
+                width={240}
+                height={64}
+                className="h-16 w-auto"
                 priority
               />
             </Link>
@@ -123,6 +126,9 @@ export default function Navbar() {
 
           {/* Desktop menu */}
           <div className="hidden md:flex items-center space-x-4">
+            {/* Language Selector */}
+            <LanguageSelector />
+
             {isLoading ? (
               <div className="h-8 w-8 rounded-full bg-gray-200 animate-pulse"></div>
             ) : user ? (
@@ -132,15 +138,15 @@ export default function Navbar() {
                     <div className="flex items-center justify-center w-8 h-8 rounded-full bg-rose-500/10 text-rose-500">
                       <User size={16} />
                     </div>
-                    <span className="hidden md:inline font-medium">{isDemoUser ? "Usuario Demo" : user.email}</span>
+                    <span className="hidden md:inline font-medium">{isDemoUser ? t("demoUser") : user.email}</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuLabel>Mi Cuenta</DropdownMenuLabel>
+                  <DropdownMenuLabel>{t("myAccount")}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout} className="text-rose-500 cursor-pointer">
                     <LogOut className="mr-2 h-4 w-4" />
-                    Cerrar Sesión
+                    {t("logout")}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -151,18 +157,19 @@ export default function Navbar() {
                     variant="outline"
                     className="border-gray-300 text-gray-700 hover:bg-rose-500 hover:text-white hover:border-rose-500"
                   >
-                    Iniciar Sesión
+                    {t("login")}
                   </Button>
                 </Link>
                 <Link href="/register">
-                  <Button className="bg-rose-500 text-white hover:bg-rose-600">Registrarse</Button>
+                  <Button className="bg-rose-500 text-white hover:bg-rose-600">{t("register")}</Button>
                 </Link>
               </div>
             )}
           </div>
 
           {/* Mobile menu button */}
-          <div className="md:hidden">
+          <div className="md:hidden flex items-center gap-2">
+            <LanguageSelector />
             <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
               {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </Button>
@@ -182,22 +189,22 @@ export default function Navbar() {
                   <div className="flex items-center justify-center w-8 h-8 rounded-full bg-rose-500/10 text-rose-500">
                     <User size={16} />
                   </div>
-                  <span className="font-medium">{isDemoUser ? "Usuario Demo" : user.email}</span>
+                  <span className="font-medium">{isDemoUser ? t("demoUser") : user.email}</span>
                 </div>
                 <Button onClick={handleLogout} variant="ghost" className="w-full justify-start text-rose-500">
                   <LogOut className="mr-2 h-4 w-4" />
-                  Cerrar Sesión
+                  {t("logout")}
                 </Button>
               </div>
             ) : (
               <div className="flex flex-col gap-2 p-3">
                 <Link href="/login" className="w-full">
                   <Button variant="outline" className="w-full text-gray-700 border-gray-300">
-                    Iniciar Sesión
+                    {t("login")}
                   </Button>
                 </Link>
                 <Link href="/register" className="w-full">
-                  <Button className="w-full bg-rose-500 hover:bg-rose-600 text-white">Registrarse</Button>
+                  <Button className="w-full bg-rose-500 hover:bg-rose-600 text-white">{t("register")}</Button>
                 </Link>
               </div>
             )}

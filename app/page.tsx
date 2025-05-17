@@ -5,9 +5,11 @@ import SignatureGenerator from "@/components/signature-generator"
 import Navbar from "@/components/navbar"
 import { motion } from "framer-motion"
 import { useEffect, useState } from "react"
+import { useLanguage } from "@/lib/i18n/language-context"
 
 export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false)
+  const { t } = useLanguage()
 
   useEffect(() => {
     setIsLoaded(true)
@@ -20,7 +22,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <header className="mb-8 text-center">
             <motion.div
-              className="flex justify-center mb-2"
+              className="flex justify-center items-center mb-2 w-full"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 20 }}
               transition={{ duration: 0.6, ease: "easeOut" }}
@@ -28,10 +30,10 @@ export default function Home() {
               <Image
                 src="/images/identy-logo-transparente.png"
                 alt="Identymail"
-                width={180}
-                height={60}
+                width={250}
+                height={150}
                 priority
-                className="h-auto w-auto"
+                className="h-auto w-auto max-w-[450px] mx-auto"
               />
             </motion.div>
             <motion.p
@@ -40,7 +42,7 @@ export default function Home() {
               animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 20 }}
               transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
             >
-              Crea firmas de email profesionales para tu empresa en minutos
+              {t("createProfessionalSignatures")}
             </motion.p>
           </header>
 

@@ -5,6 +5,7 @@ import { Inter } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
 import Footer from "@/components/footer"
+import { LanguageProvider } from "@/lib/i18n/language-context"
 
 // Cargar la fuente Inter
 const inter = Inter({
@@ -28,9 +29,11 @@ export default function RootLayout({
     <html lang="es" className={inter.variable}>
       <body className="min-h-screen bg-background font-sans antialiased flex flex-col">
         <ThemeProvider attribute="class" defaultTheme="light">
-          <div className="flex-1 flex flex-col">{children}</div>
-          <Footer />
-          <Toaster />
+          <LanguageProvider>
+            <div className="flex-1 flex flex-col">{children}</div>
+            <Footer />
+            <Toaster />
+          </LanguageProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -55,11 +55,8 @@ export default function LoginForm() {
           description: t("successLoginMessage"),
         })
 
-        // Forzar la redirección después de un breve retraso
-        setTimeout(() => {
-          window.location.href = "/"
-        }, 500)
-
+        // Modificado: Usar router.push en lugar de window.location
+        router.push("/")
         return
       }
 
@@ -77,10 +74,15 @@ export default function LoginForm() {
         description: t("successLoginMessage"),
       })
 
-      // Forzar la redirección después de un breve retraso
+      // Modificado: Usar router.push en lugar de window.location
+      router.push("/")
+
+      // Forzar un refresco completo después de un breve retraso si la navegación no funciona
       setTimeout(() => {
-        window.location.href = "/"
-      }, 500)
+        if (window.location.pathname === "/login") {
+          window.location.href = "/"
+        }
+      }, 1000)
     } catch (error: any) {
       console.error("Error de inicio de sesión:", error)
       toast({

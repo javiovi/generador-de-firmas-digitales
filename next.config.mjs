@@ -9,7 +9,13 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    domains: ['cdn-icons-png.flaticon.com', 'placehold.co'],
+    domains: [
+      'cdn-icons-png.flaticon.com', 
+      'placehold.co',
+      'public.blob.vercel-storage.com', // Añadido dominio de Vercel Blob
+      'lfqxvvbcxvwfvvvnxvxl.supabase.co', // Añadido dominio de Supabase Storage
+      'vercel-blob.com' // Añadido dominio alternativo de Vercel Blob
+    ],
     unoptimized: true,
   },
   webpack: (config, { isServer }) => {

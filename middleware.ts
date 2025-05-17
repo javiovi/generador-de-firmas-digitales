@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server"
 import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs"
 
 // Rutas que no requieren autenticación
-const publicRoutes = ["/login", "/register", "/reset-password", "/update-password"]
+const publicRoutes = ["/login", "/register", "/reset-password", "/update-password", "/auth/callback"]
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next()
@@ -33,6 +33,7 @@ export async function middleware(req: NextRequest) {
   // Si no hay usuario y no es una ruta pública, redirigir al login
   if (!user && !isPublicRoute) {
     const redirectUrl = new URL("/login", req.url)
+    redirectUrl.searchParams.set("redirect", req.nextUrl.pathname)
     return NextResponse.redirect(redirectUrl)
   }
 

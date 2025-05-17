@@ -27,6 +27,7 @@ export const translations = {
 
     // Home
     createProfessionalSignatures: "Create professional email signatures for your company in minutes",
+    createManageSignature: "Create and manage your professional signature in seconds",
 
     // Signature Generator
     editing: "Editing",
@@ -163,6 +164,7 @@ export const translations = {
 
     // Home
     createProfessionalSignatures: "Crea firmas de email profesionales para tu empresa en minutos",
+    createManageSignature: "Crea y gestiona tu firma profesional en segundos",
 
     // Signature Generator
     editing: "Editando",

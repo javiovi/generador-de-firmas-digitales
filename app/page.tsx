@@ -42,7 +42,7 @@ export default function Home() {
               animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 20 }}
               transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
             >
-              {t("createProfessionalSignatures")}
+              {t("createManageSignature")}
             </motion.p>
           </header>
 

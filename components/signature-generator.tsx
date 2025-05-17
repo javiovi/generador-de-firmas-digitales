@@ -1305,9 +1305,7 @@ export default function SignatureGenerator() {
                               <AlertDialogContent>
                                 <AlertDialogHeader>
                                   <AlertDialogTitle>{t("areYouSure")}</AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    {t("actionCannotBeUndone")}
-                                  </AlertDialogDescription>
+                                  <AlertDialogDescription>{t("actionCannotBeUndone")}</AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
                                   <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
@@ -1566,6 +1564,7 @@ export default function SignatureGenerator() {
                           </div>
                         </div>
                       )}
+                    </div>
 
                     <div className="form-group">
                       <Label className="flex items-center gap-2 text-sm font-medium mb-3">
@@ -1772,9 +1771,7 @@ export default function SignatureGenerator() {
 
                   <TabsContent value="image" className="space-y-4">
                     <h2 className="text-xl font-semibold mb-4">{t("exportAsImage")}</h2>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      {t("exportSignatureAsImage")}
-                    </p>
+                    <p className="text-sm text-muted-foreground mb-4">{t("exportSignatureAsImage")}</p>
                     <ExportToImage signatureData={signatureData} />
                   </TabsContent>
 
@@ -1829,5 +1826,5 @@ export default function SignatureGenerator() {
         </div>
       </div>
     </div>
-  )\
+  )
 }

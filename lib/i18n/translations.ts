@@ -54,6 +54,10 @@ export const translations = {
     acceptedFormats: "Accepted formats: PNG, JPG, SVG",
     profilePhoto: "Profile Photo",
     socialNetworks: "Social Networks",
+    personalization: "Personalization",
+    customizeVisualAspect: "Customize the visual aspect of your signature",
+    acceptedFormatsLogo: "Accepted formats for logo: PNG, JPG, SVG",
+    identymail: "Identymail",
 
     // Export
     htmlCode: "HTML Code",
@@ -139,6 +143,13 @@ export const translations = {
     quickTip: "Quick Tip",
     quickTipText:
       "For the best results, use high-quality images for your logo and photo. The recommended size for profile photos is 150x150 pixels.",
+
+    step1Wizard: "Step 1 · Basic Data",
+    step2Wizard: "Step 2 · Personalization",
+    step3Wizard: "Step 3 · Social Networks",
+    step4Wizard: "Step 4 · Export",
+
+    ctaCreateFirstSignature: "Create my first signature",
   },
   es: {
     // Navbar
@@ -193,6 +204,10 @@ export const translations = {
     acceptedFormats: "Formatos aceptados: PNG, JPG, SVG",
     profilePhoto: "Foto de Perfil",
     socialNetworks: "Redes Sociales",
+    personalization: "Personalización",
+    customizeVisualAspect: "Personaliza el aspecto visual de tu firma",
+    acceptedFormatsLogo: "Formatos aceptados para el logo: PNG, JPG, SVG",
+    identymail: "Identymail",
 
     // Export
     htmlCode: "Código HTML",
@@ -278,5 +293,12 @@ export const translations = {
     quickTip: "Consejo Rápido",
     quickTipText:
       "Para mejores resultados, utiliza imágenes de alta calidad para tu logo y foto. El tamaño recomendado para fotos de perfil es de 150x150 píxeles.",
+
+    step1Wizard: "Datos básicos",
+    step2Wizard: "Personalización",
+    step3Wizard: "Redes sociales",
+    step4Wizard: "Exportar",
+
+    ctaCreateFirstSignature: "Crear mi primera firma",
   },
 }

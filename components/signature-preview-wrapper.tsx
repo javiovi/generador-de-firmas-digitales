@@ -29,10 +29,21 @@ export default function SignaturePreviewWrapper({ data }: SignaturePreviewWrappe
   }
 
   return (
-    <div className="rounded-lg bg-panel p-6 pb-8 shadow-sm">
-      <h3 className="mb-4 text-lg font-semibold text-text">{t("signaturePreview")}</h3>
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center space-x-2">
+    <div className="rounded-lg bg-panel p-3 pb-4 shadow-sm">
+      <div className="flex flex-col items-center ">
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <h3 className="text-base font-medium text-text mb-0">{t("signaturePreview")}</h3>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setDarkMode(!darkMode)}
+            className="border-neutral text-text hover:bg-neutral/20 flex items-center gap-1"
+          >
+            {darkMode ? <Sun size={16} /> : <Moon size={16} />}
+            {darkMode ? t("lightMode") : t("darkMode")}
+          </Button>
+        </div>
+        <div className="flex items-center justify-center gap-2 mb-2">
           <Button
             variant={deviceSize === "desktop" ? "default" : "outline"}
             size="icon"
@@ -61,17 +72,7 @@ export default function SignaturePreviewWrapper({ data }: SignaturePreviewWrappe
             <Smartphone size={16} />
           </Button>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setDarkMode(!darkMode)}
-          className="border-neutral text-text hover:bg-neutral/20 flex items-center gap-1"
-        >
-          {darkMode ? <Sun size={16} /> : <Moon size={16} />}
-          {darkMode ? t("lightMode") : t("darkMode")}
-        </Button>
       </div>
-
       <Card
         className={`overflow-hidden ${getDeviceWidth()} mx-auto border border-coolgray-200 ${
           darkMode ? "bg-charcoal-900" : "bg-white"

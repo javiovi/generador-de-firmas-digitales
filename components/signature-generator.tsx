@@ -1345,11 +1345,58 @@ ${tableContent}
             </Card>
           </TabsContent>
 
-          <TabsContent value="editor" className="space-y-6">
+          <TabsContent value="editor" className="space-y-6" id="editor">
+            {/* Stepper visual mejorado */}
+            <ol className="flex items-center mb-6 space-x-4 text-sm font-medium stepper-wizard">
+              <li className="step-active">{t("step1Wizard")}</li>
+              <li>{t("step2Wizard")}</li>
+              <li>{t("step3Wizard")}</li>
+              <li>{t("step4Wizard")}</li>
+            </ol>
+            <style jsx>{`
+              .stepper-wizard {
+                counter-reset: step;
+              }
+              .stepper-wizard li {
+                position: relative;
+                padding-left: 2.5rem;
+                color: #888;
+                transition: color 0.2s;
+              }
+              .stepper-wizard li:before {
+                counter-increment: step;
+                content: counter(step);
+                position: absolute;
+                left: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 2rem;
+                height: 2rem;
+                border-radius: 50%;
+                background: #e5e7eb;
+                color: #333;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+                font-size: 1rem;
+                border: 2px solid #d1d5db;
+                transition: background 0.2s, color 0.2s, border 0.2s;
+              }
+              .stepper-wizard li.step-active {
+                color: #4F46E5;
+                font-weight: bold;
+              }
+              .stepper-wizard li.step-active:before {
+                background: #4F46E5;
+                color: #fff;
+                border-color: #4F46E5;
+              }
+            `}</style>
             <Card className="shadow-card">
               <CardHeader>
-                <CardTitle>{t("personalInfo")}</CardTitle>
-                <CardDescription>{t("enterPersonalInfo")}</CardDescription>
+                <CardTitle>{`Paso 1 · ${t("newSignature")}`}</CardTitle>
+                <CardDescription>Completa tus datos básicos</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

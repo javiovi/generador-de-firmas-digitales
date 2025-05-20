@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 
 export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false)
+  const [showGenerator, setShowGenerator] = useState(false)
   const { t } = useLanguage()
 
   useEffect(() => {
@@ -23,6 +24,15 @@ export default function Home() {
     }
   }, [])
 
+  const handleCtaClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault()
+    const editor = document.getElementById("editor")
+    if (editor) {
+      editor.scrollIntoView({ behavior: "smooth" })
+    }
+    setShowGenerator(true)
+  }
+
   return (
     <>
       <Navbar />
@@ -30,19 +40,27 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <header className="mb-8 text-center">
             <motion.p
-              className="text-lg text-text/80"
+              className="text-3xl md:text-4xl font-bold text-text/90 pt-12 pb-8"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 20 }}
               transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
             >
               {t("createManageSignature")}
             </motion.p>
+            <a
+              href="#editor"
+              onClick={handleCtaClick}
+              className="inline-block mt-6 px-8 py-4 text-lg font-bold rounded-full bg-primary text-white shadow-lg hover:bg-primary/90 transition-colors duration-200"
+              style={{ scrollBehavior: 'smooth' }}
+            >
+              {t("ctaCreateFirstSignature")}
+            </a>
           </header>
 
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 30 }}
-            transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+            initial={false}
+            animate={showGenerator ? { opacity: [1, 0.5, 1] } : { opacity: 1 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
           >
             <SignatureGenerator />
           </motion.div>

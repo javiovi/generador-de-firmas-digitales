@@ -169,28 +169,35 @@ export default function SignatureGenerator() {
     if (name.includes(".")) {
       const [parent, child, subChild] = name.split(".")
 
-      if (subChild) {
-        // Para campos anidados como socialLinks.facebook.url
-        setSignatureData((prev) => ({
-          ...prev,
-          [parent]: {
-            ...prev[parent as keyof SignatureData],
-            [child]: {
-              ...prev[parent as keyof SignatureData][child],
-              [subChild]: value,
-            },
-          },
-        }))
-      } else {
-        // Para campos como socialLinks.facebook
-        setSignatureData((prev) => ({
-          ...prev,
-          [parent]: {
-            ...prev[parent as keyof SignatureData],
-            [child]: value,
-          },
-        }))
-      }
+      setSignatureData((prev) => {
+        // Solo si parent es 'socialLinks' y child es una red social válida
+        if (parent === "socialLinks" && child && prev.socialLinks && typeof prev.socialLinks === "object") {
+          const socialLinks = { ...prev.socialLinks }
+          if (subChild) {
+            // socialLinks.facebook.url
+            if (socialLinks[child as keyof typeof socialLinks]) {
+              socialLinks[child as keyof typeof socialLinks] = {
+                ...socialLinks[child as keyof typeof socialLinks],
+                [subChild]: value,
+              }
+            }
+          } else {
+            // socialLinks.facebook
+            if (socialLinks[child as keyof typeof socialLinks]) {
+              socialLinks[child as keyof typeof socialLinks] = {
+                ...socialLinks[child as keyof typeof socialLinks],
+                url: value,
+              }
+            }
+          }
+          return {
+            ...prev,
+            socialLinks,
+          }
+        }
+        // fallback
+        return prev
+      })
     } else {
       setSignatureData((prev) => ({
         ...prev,
@@ -479,7 +486,8 @@ export default function SignatureGenerator() {
   }
 
   // Generar el código HTML para la firma según la plantilla seleccionada
-  const generateHtmlCode = (darkMode = false, inlineStyles = true) => {
+  // Si exportOnlyTable es true, solo devuelve el bloque <table>...</table>
+  const generateHtmlCode = (darkMode = false, inlineStyles = true, exportOnlyTable = true) => {
     const template = getTemplateById(signatureData.templateId)
 
     // Colores adaptados al modo oscuro
@@ -573,20 +581,11 @@ export default function SignatureGenerator() {
 
     // Generar HTML según la posición de las imágenes
     let htmlContent = ""
+    let tableContent = ""
 
     switch (template.id) {
       case TemplateType.CLASSIC:
-        htmlContent = `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Email Signature</title>
-  <style>
-    ${responsiveStyles}
-  </style>
-</head>
-<body>
+        tableContent = `
   <table cellpadding="0" cellspacing="0" border="0" class="signature-table" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0; width: 550px;">
     <tr>
       <td class="signature-logo" style="padding-right: 15px; vertical-align: top; width: 150px;">
@@ -700,13 +699,25 @@ export default function SignatureGenerator() {
         </table>
       </td>
     </tr>
-  </table>
+  </table>`
+        htmlContent = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email Signature</title>
+  <style>
+    ${responsiveStyles}
+  </style>
+</head>
+<body>
+${tableContent}
 </body>
 </html>`
         break
 
       case TemplateType.MODERN:
-        htmlContent = `<!DOCTYPE html>
+        tableContent = `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -830,10 +841,24 @@ export default function SignatureGenerator() {
   </table>
 </body>
 </html>`
+        htmlContent = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email Signature</title>
+  <style>
+    ${responsiveStyles}
+  </style>
+</head>
+<body>
+${tableContent}
+</body>
+</html>`
         break
 
       case TemplateType.MINIMAL:
-        htmlContent = `<!DOCTYPE html>
+        tableContent = `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -934,10 +959,24 @@ export default function SignatureGenerator() {
   </table>
 </body>
 </html>`
+        htmlContent = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email Signature</title>
+  <style>
+    ${responsiveStyles}
+  </style>
+</head>
+<body>
+${tableContent}
+</body>
+</html>`
         break
 
       case TemplateType.CORPORATE:
-        htmlContent = `<!DOCTYPE html>
+        tableContent = `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -1069,9 +1108,6 @@ export default function SignatureGenerator() {
   </table>
 </body>
 </html>`
-        break
-
-      default:
         htmlContent = `<!DOCTYPE html>
 <html>
 <head>
@@ -1083,111 +1119,37 @@ export default function SignatureGenerator() {
   </style>
 </head>
 <body>
+${tableContent}
+</body>
+</html>`
+        break
+
+      default:
+        tableContent = `
   <table cellpadding="0" cellspacing="0" border="0" class="signature-table" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
-    <tr>
-      <td class="signature-logo" style="padding-right: 15px; vertical-align: top;">
-        <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
-          <tr>
-            <td style="padding: 0 0 10px 0; text-align: center;">
-              <img src="${signatureData.logoUrl}" alt="${signatureData.company}" width="150" style="width: 150px; max-width: 150px; display: block;">
-            </td>
-          </tr>
-          <tr>
-            <td style="padding: 0; text-align: center;">
-              <img src="${signatureData.photoUrl}" alt="${signatureData.name}" width="150" height="150" class="signature-profile-image" style="width: 150px; height: 150px; max-width: 150px; border-radius: 75px; display: block;">
-            </td>
-          </tr>
-        </table>
-      </td>
-      <td class="signature-content" style="padding-left: 15px; border-left: 3px solid ${signatureData.primaryColor}; vertical-align: top;">
-        <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
-          <tr>
-            <td style="padding: 0 0 5px 0;">
-              <div style="font-family: Arial, sans-serif; font-size: 18px; font-weight: bold; color: ${textColor}; margin: 0;">${signatureData.name}</div>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding: 0 0 15px 0;">
-              <div style="font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; color: ${signatureData.primaryColor}; margin: 0;">${signatureData.position}</div>
-              <div style="border-bottom: 2px solid ${signatureData.primaryColor}; margin-top: 5px;"></div>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding: 0 0 10px 0;">
-              <div style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor}; margin: 0;">${signatureData.address}</div>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding: 0 0 5px 0;">
-              <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
-                <tr>
-                  <td width="20" style="vertical-align: top; padding-right: 5px;">
-                    <div style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${textColor}" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-                      </svg>
-                    </div>
-                  </td>
-                  <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor};">
-                    <a href="tel:${signatureData.phone}" style="color: ${textColor}; text-decoration: none;">${signatureData.phone}</a>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding: 0 0 5px 0;">
-              <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
-                <tr>
-                  <td width="20" style="vertical-align: top; padding-right: 5px;">
-                    <div style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${textColor}" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                        <polyline points="22,6 12,13 2,6"></polyline>
-                      </svg>
-                    </div>
-                  </td>
-                  <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor};">
-                    <a href="mailto:${signatureData.email}" style="color: ${textColor}; text-decoration: none;">${signatureData.email}</a>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding: 0 0 10px 0;">
-              <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
-                <tr>
-                  <td width="20" style="vertical-align: top; padding-right: 5px;">
-                    <div style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${signatureData.primaryColor}" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="2" y1="12" x2="22" y2="12"></line>
-                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                      </svg>
-                    </div>
-                  </td>
-                  <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${signatureData.primaryColor};">
-                    <a href="https://${signatureData.website}" style="color: ${signatureData.primaryColor}; text-decoration: none;">${signatureData.website}</a>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-          <tr>
-            <td class="signature-social-icons">
-              ${socialHtml}
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
+    ...firma default...
+  </table>`
+        htmlContent = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email Signature</title>
+  <style>
+    ${responsiveStyles}
+  </style>
+</head>
+<body>
+${tableContent}
 </body>
 </html>`
     }
 
-    return htmlContent
+    // Si exportOnlyTable, solo devolver el bloque de la tabla
+    if (exportOnlyTable) {
+      return tableContent.trim()
+    }
+    return htmlContent.trim()
   }
 
   return (
@@ -1709,7 +1671,7 @@ export default function SignatureGenerator() {
                             onCheckedChange={(checked) => {
                               setInlineStyles(checked)
                               if (htmlCodeRef.current) {
-                                htmlCodeRef.current.value = generateHtmlCode(false, checked)
+                                htmlCodeRef.current.value = generateHtmlCode(false, checked, true)
                               }
                             }}
                           />
@@ -1720,7 +1682,7 @@ export default function SignatureGenerator() {
                           size="sm"
                           onClick={() => {
                             if (htmlCodeRef.current) {
-                              htmlCodeRef.current.value = generateHtmlCode(false, inlineStyles)
+                              htmlCodeRef.current.value = generateHtmlCode(false, inlineStyles, true)
                             }
                           }}
                           className="flex items-center gap-1 border-neutral text-text hover:bg-neutral/20"
@@ -1733,7 +1695,7 @@ export default function SignatureGenerator() {
                           size="sm"
                           onClick={() => {
                             if (htmlCodeRef.current) {
-                              htmlCodeRef.current.value = generateHtmlCode(true, inlineStyles)
+                              htmlCodeRef.current.value = generateHtmlCode(true, inlineStyles, true)
                             }
                           }}
                           className="flex items-center gap-1 border-neutral text-text hover:bg-neutral/20"
@@ -1765,7 +1727,7 @@ export default function SignatureGenerator() {
                       ref={htmlCodeRef}
                       className="w-full h-[400px] p-4 font-mono text-sm border rounded-md"
                       readOnly
-                      value={generateHtmlCode()}
+                      value={generateHtmlCode(false, inlineStyles, true)}
                     />
                   </TabsContent>
 

@@ -20,6 +20,9 @@ import {
 import Cookies from "js-cookie"
 import LanguageSelector from "@/components/language-selector"
 import { useLanguage } from "@/lib/i18n/language-context"
+import { Input } from "@/components/ui/input"
+import { useTheme } from "next-themes"
+import { Sun, Moon, Laptop } from "lucide-react"
 
 export default function Navbar() {
   const [user, setUser] = useState<any>(null)
@@ -28,6 +31,8 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const router = useRouter()
   const { t } = useLanguage()
+  const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -70,6 +75,10 @@ export default function Navbar() {
     }
   }, [])
 
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   const handleLogout = async () => {
     try {
       if (isDemoUser) {
@@ -107,6 +116,8 @@ export default function Navbar() {
     }
   }
 
+  if (!mounted) return null
+
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -116,9 +127,9 @@ export default function Navbar() {
               <Image
                 src="/images/identy-logo-transparente.png"
                 alt="Identymail Logo"
-                width={240}
-                height={64}
-                className="h-16 w-auto"
+                width={320}
+                height={90}
+                className="h-20 w-auto"
                 priority
               />
             </Link>

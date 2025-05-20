@@ -14,6 +14,7 @@ import { toast } from "@/components/ui/use-toast"
 import { createBrowserSupabaseClient } from "@/lib/supabase"
 import { Loader2, Eye, EyeOff } from "lucide-react"
 import { useLanguage } from "@/lib/i18n/language-context"
+import { setAuthSession } from "@/lib/auth-helper"
 
 export default function LoginForm() {
   const [email, setEmail] = useState("")
@@ -23,22 +24,6 @@ export default function LoginForm() {
   const [loginSuccess, setLoginSuccess] = useState(false)
   const router = useRouter()
   const { t, changeLanguage, language } = useLanguage()
-
-  // Efecto para manejar la redirección después de un login exitoso
-  useEffect(() => {
-    if (loginSuccess) {
-      // Primero intentamos con router.push
-      router.push("/")
-
-      // Como respaldo, usamos una redirección forzada después de un breve retraso
-      const redirectTimer = setTimeout(() => {
-        console.log("Forzando redirección a la página principal")
-        window.location.href = "/"
-      }, 1500)
-
-      return () => clearTimeout(redirectTimer)
-    }
-  }, [loginSuccess, router])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -52,56 +37,25 @@ export default function LoginForm() {
       return
     }
 
-    try {
-      setIsLoading(true)
-      const supabase = createBrowserSupabaseClient()
-
-      // Credenciales fijas para la app beta
-      if (email === "admin@gmail.com" && password === "123456") {
-        const { error } = await supabase.auth.signInWithPassword({
-          email: "admin@gmail.com",
-          password: "123456",
-        })
-
-        if (error) {
-          throw error
-        }
-
-        toast({
-          title: t("successLogin"),
-          description: t("successLoginMessage"),
-        })
-
-        // Marcar el login como exitoso para activar la redirección
-        setLoginSuccess(true)
-        return
-      }
-
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
-
-      if (error) {
-        throw error
-      }
-
+    // Validación local
+    if (email === "admin@identymail.com" && password === "admin123") {
+      localStorage.setItem("isLoggedIn", "true")
+      console.log("isLoggedIn guardado en localStorage")
       toast({
         title: t("successLogin"),
         description: t("successLoginMessage"),
       })
-
-      // Marcar el login como exitoso para activar la redirección
-      setLoginSuccess(true)
-    } catch (error: any) {
-      console.error("Error de inicio de sesión:", error)
+      setTimeout(() => {
+        window.location.href = "/"
+      }, 500)
+      return
+    } else {
       toast({
         title: t("errorLogin"),
-        description: error.message || "No se pudo iniciar sesión. Verifica tus credenciales.",
+        description: "Usuario o contraseña incorrectos.",
         variant: "destructive",
       })
-    } finally {
-      setIsLoading(false)
+      return
     }
   }
 
@@ -134,6 +88,7 @@ export default function LoginForm() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                autoComplete="email"
               />
             </div>
 
@@ -153,6 +108,7 @@ export default function LoginForm() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   className="pr-10"
+                  autoComplete="current-password"
                 />
                 <button
                   type="button"

@@ -74,7 +74,7 @@ export function getDefaultSignatureData(templateId: TemplateType): SignatureData
       },
       twitter: {
         url: "https://x.com/empresa",
-        enabled: true,
+        enabled: false,
       },
     },
     templateId: templateId,

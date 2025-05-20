@@ -6,6 +6,7 @@ import Navbar from "@/components/navbar"
 import { motion } from "framer-motion"
 import { useEffect, useState } from "react"
 import { useLanguage } from "@/lib/i18n/language-context"
+import { Button } from "@/components/ui/button"
 
 export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false)
@@ -13,6 +14,13 @@ export default function Home() {
 
   useEffect(() => {
     setIsLoaded(true)
+    if (typeof window !== "undefined") {
+      const isLoggedIn = localStorage.getItem("isLoggedIn")
+      console.log("isLoggedIn en home:", isLoggedIn)
+      if (isLoggedIn !== "true") {
+        window.location.href = "/login"
+      }
+    }
   }, [])
 
   return (
@@ -21,21 +29,6 @@ export default function Home() {
       <main className="container mx-auto min-h-screen bg-background px-4 py-8 md:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <header className="mb-8 text-center">
-            <motion.div
-              className="flex justify-center items-center mb-2 w-full"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 20 }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
-            >
-              <SafeImage
-                src="/images/identy-logo-transparente.png"
-                alt="Identymail"
-                width={250}
-                height={150}
-                priority
-                className="h-auto w-auto max-w-[450px] mx-auto"
-              />
-            </motion.div>
             <motion.p
               className="text-lg text-text/80"
               initial={{ opacity: 0, y: 20 }}

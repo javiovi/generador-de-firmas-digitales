@@ -100,6 +100,7 @@ export const translations = {
     // Templates
     selectTemplate: "Select a Template",
     chooseDesign: "Choose the design that best suits your needs",
+    chooseDesignThatSuitsYou: "Choose the design that suits you best",
     classic: "Classic",
     classicDesc: "Traditional design with photo and logo",
     modern: "Modern",
@@ -238,6 +239,7 @@ export const translations = {
     // Templates
     selectTemplate: "Selecciona una Plantilla",
     chooseDesign: "Elige el diseño que mejor se adapte a tus necesidades",
+    chooseDesignThatSuitsYou: "Elige el diseño que más te guste",
     classic: "Clásica",
     classicDesc: "Diseño tradicional con foto y logo",
     modern: "Moderna",

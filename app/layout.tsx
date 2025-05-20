@@ -26,9 +26,14 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="es" className={inter.variable}>
+    <html lang="es" suppressHydrationWarning className={inter.variable}>
       <body className="min-h-screen bg-background font-sans antialiased flex flex-col">
-        <ThemeProvider attribute="class" defaultTheme="light">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem
+          disableTransitionOnChange
+        >
           <LanguageProvider>
             <div className="flex-1 flex flex-col">{children}</div>
             <Footer />

@@ -39,8 +39,9 @@ export default function Home() {
       <main className="container mx-auto min-h-screen bg-background px-4 py-8 md:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <header className="mb-8 text-center">
+            <img src="/images/rubrica-logo.png" alt="Rubrica Logo" className="mx-auto h-32 md:h-80" />
             <motion.p
-              className="text-3xl md:text-4xl font-bold text-text/90 pt-12 pb-8"
+              className="text-xl md:text-3xl font-bold text-text/90 -mt-8 pb-8"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 20 }}
               transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}

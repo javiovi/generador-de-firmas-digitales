@@ -125,11 +125,11 @@ export default function Navbar() {
           <div className="flex items-center">
             <Link href="/" className="flex items-center">
               <Image
-                src="/images/identy-logo-transparente.png"
-                alt="Identymail Logo"
+                src="/images/rubrica-logo.png"
+                alt="Rubrica Logo"
                 width={320}
                 height={90}
-                className="h-20 w-auto"
+                className="h-24 w-auto"
                 priority
               />
             </Link>

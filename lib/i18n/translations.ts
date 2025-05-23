@@ -150,13 +150,7 @@ export const translations = {
     step4Wizard: "Step 4 · Export",
 
     ctaCreateFirstSignature: "Create my first signature",
-    codeCopied: "Code copied!",
-htmlCodeCopied: "The signature HTML code has been copied to the clipboard.",
   },
-
-
-
-
   es: {
     // Navbar
     login: "Iniciar Sesión",
@@ -306,9 +300,5 @@ htmlCodeCopied: "The signature HTML code has been copied to the clipboard.",
     step4Wizard: "Exportar",
 
     ctaCreateFirstSignature: "Crear mi primera firma",
-    codeCopied: "¡Código copiado!",
-htmlCodeCopied: "El código HTML de la firma se ha copiado al portapapeles.",
-
-
   },
 }

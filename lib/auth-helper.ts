@@ -88,4 +88,4 @@ export const getAuthSession = async () => {
     console.error("Error en getAuthSession:", error)
     return null
   }
-} 
+}

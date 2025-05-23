@@ -9,8 +9,8 @@ interface SignaturePreviewProps {
 }
 
 export default function SignaturePreview({ data, darkMode = false }: SignaturePreviewProps) {
-  const textColor = "#000000"
-  const mutedTextColor = "#000000"
+  const textColor = darkMode ? "#e5e7eb" : "#333333"
+  const mutedTextColor = darkMode ? "#9ca3af" : "#666666"
 
   // Filtrar redes sociales habilitadas
   const enabledSocialNetworks = Object.entries(data.socialLinks)

@@ -162,5 +162,3 @@ El proceso de creación de firmas se divide en cuatro pestañas principales:
 - Panel lateral que muestra cómo se ve la firma mientras se edita
     
 - Actualización instantánea con cada cambio
-    
-

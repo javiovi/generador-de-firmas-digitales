@@ -989,7 +989,8 @@ export default function SignatureGenerator() {
   // 2. Modificar handleColorChange para subir íconos y guardar URLs
   const handleColorChange = async (color: string) => {
     setSignatureData((prev) => ({ ...prev, primaryColor: color }));
-    const urls = await generateAndUploadIcons(color);
+    // Si tienes darkMode, pásalo aquí. Por ahora, 'light' fijo:
+    const urls = await generateAndUploadIcons(color, 'light');
     setIconUrls(urls);
   };
 

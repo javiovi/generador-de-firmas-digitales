@@ -66,18 +66,25 @@ export async function generatePngUrl(svgString: string, width: number, height: n
   }
 }
 
-export async function svgToPngBlob(svgString: string, color: string, size = 15): Promise<Blob> {
-  // Reemplaza el color en el SVG (ajusta el atributo según tu SVG)
+export async function svgToPngBlob(
+  svgString: string,
+  color: string,
+  size = 15,
+  background: "light" | "dark" = "light"
+): Promise<Blob> {
   const coloredSvg = svgString.replace(/stroke="[^"]*"/g, `stroke="${color}"`);
-  // Crea un canvas
   const canvas = document.createElement("canvas");
   canvas.width = size;
   canvas.height = size;
-  // Renderiza el SVG en el canvas
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("No se pudo obtener el contexto del canvas");
+
+  // Dibuja el fondo opaco antes del SVG
+  ctx.fillStyle = background === "dark" ? "#000000" : "#FFFFFF";
+  ctx.fillRect(0, 0, size, size);
+
   const v = await Canvg.fromString(ctx, coloredSvg);
   await v.render();
-  // Convierte el canvas a blob PNG
+
   return await new Promise<Blob>((resolve) => canvas.toBlob((blob) => resolve(blob!), "image/png"));
 } 

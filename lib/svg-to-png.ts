@@ -1,3 +1,5 @@
+import { Canvg } from "canvg";
+
 export async function svgToPng(svgString: string, width: number, height: number): Promise<string> {
   // Crear un elemento SVG
   const svg = new DOMParser().parseFromString(svgString, 'image/svg+xml').documentElement;
@@ -62,4 +64,20 @@ export async function generatePngUrl(svgString: string, width: number, height: n
     console.error('Error al generar URL PNG:', error);
     throw error;
   }
+}
+
+export async function svgToPngBlob(svgString: string, color: string, size = 15): Promise<Blob> {
+  // Reemplaza el color en el SVG (ajusta el atributo según tu SVG)
+  const coloredSvg = svgString.replace(/stroke="[^"]*"/g, `stroke="${color}"`);
+  // Crea un canvas
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  // Renderiza el SVG en el canvas
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("No se pudo obtener el contexto del canvas");
+  const v = await Canvg.fromString(ctx, coloredSvg);
+  await v.render();
+  // Convierte el canvas a blob PNG
+  return await new Promise<Blob>((resolve) => canvas.toBlob((blob) => resolve(blob!), "image/png"));
 } 

@@ -72,6 +72,7 @@ import EmailClientGuides from "@/components/email-client-guides"
 import CollaborationFeatures from "@/components/collaboration-features"
 import EmailClientPreview from "@/components/email-client-preview"
 import { generatePngUrl } from "@/lib/svg-to-png"
+import { generateAndUploadIcons } from "@/lib/icon-upload"
 
 // Definir la interfaz para los enlaces sociales
 interface SocialLink {
@@ -725,6 +726,7 @@ ${tableContent}
 
 export function generateHtmlCodeWithPngIcons(
   signature: Signature,
+  iconUrls: Record<string, string> = {},
   mode: 'preview' | 'export' = 'preview'
 ): string {
   const primaryColor = signature.primaryColor || '#000000'
@@ -736,19 +738,19 @@ export function generateHtmlCodeWithPngIcons(
 
   // Generar URLs para los iconos de contacto como PNG
   const contactIcons = {
-    address: `${baseUrl}/api/icon?type=address&color=${encodeURIComponent(primaryColor)}&size=15&format=png`,
-    phone: `${baseUrl}/api/icon?type=phone&color=${encodeURIComponent(primaryColor)}&size=15&format=png`,
-    mail: `${baseUrl}/api/icon?type=mail&color=${encodeURIComponent(primaryColor)}&size=15&format=png`,
-    web: `${baseUrl}/api/icon?type=web&color=${encodeURIComponent(primaryColor)}&size=15&format=png`
+    address: iconUrls.address || '',
+    phone: iconUrls.phone || '',
+    mail: iconUrls.mail || '',
+    web: iconUrls.web || ''
   }
 
   // Generar URLs para los iconos sociales como PNG
   const socialIcons = {
-    facebook: `${baseUrl}/api/icon?type=facebook&color=${encodeURIComponent(primaryColor)}&size=15&format=png`,
-    instagram: `${baseUrl}/api/icon?type=instagram&color=${encodeURIComponent(primaryColor)}&size=15&format=png`,
-    linkedin: `${baseUrl}/api/icon?type=linkedin&color=${encodeURIComponent(primaryColor)}&size=15&format=png`,
-    twitter: `${baseUrl}/api/icon?type=twitter&color=${encodeURIComponent(primaryColor)}&size=15&format=png`,
-    youtube: `${baseUrl}/api/icon?type=youtube&color=${encodeURIComponent(primaryColor)}&size=15&format=png`
+    facebook: iconUrls.facebook || '',
+    instagram: iconUrls.instagram || '',
+    linkedin: iconUrls.linkedin || '',
+    twitter: iconUrls.twitter || '',
+    youtube: iconUrls.youtube || ''
   }
 
   // Generar el HTML base
@@ -866,6 +868,8 @@ export default function SignatureGenerator() {
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateType>(TemplateType.CLASSIC)
   const [isResponsive, setIsResponsive] = useState(true)
   const [inlineStyles, setInlineStyles] = useState(true)
+  // 1. Estado para las URLs de los íconos
+  const [iconUrls, setIconUrls] = useState<Record<string, string>>({});
 
   const {
     isLoading,
@@ -982,23 +986,23 @@ export default function SignatureGenerator() {
     }
   }
 
-  const handleColorChange = (color: string) => {
-    setSignatureData((prev) => ({
-      ...prev,
-      primaryColor: color,
-    }))
-  }
+  // 2. Modificar handleColorChange para subir íconos y guardar URLs
+  const handleColorChange = async (color: string) => {
+    setSignatureData((prev) => ({ ...prev, primaryColor: color }));
+    const urls = await generateAndUploadIcons(color);
+    setIconUrls(urls);
+  };
 
   const copyHtmlToClipboard = async () => {
-    const html = await generateHtmlCodeWithPngIcons(signatureData)
-    await navigator.clipboard.writeText(html)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    const html = await generateHtmlCodeWithPngIcons(signatureData, iconUrls);
+    await navigator.clipboard.writeText(html);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
     toast({
       title: t("codeCopied"),
       description: t("htmlCodeCopied"),
-    })
-  }
+    });
+  };
 
   const downloadHtmlFile = () => {
     if (htmlCodeRef.current) {

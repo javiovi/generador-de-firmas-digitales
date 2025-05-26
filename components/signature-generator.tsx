@@ -365,7 +365,7 @@ let tableContent = ""
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Email Signature</title>
+  <title>Rubrica - Tu firma digital en segundos</title>
   <style>
     ${responsiveStyles}
   </style>
@@ -706,7 +706,7 @@ ${tableContent}
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Email Signature</title>
+  <title>Rubrica - Tu firma digital en segundos</title>
   <style>
     ${responsiveStyles}
   </style>

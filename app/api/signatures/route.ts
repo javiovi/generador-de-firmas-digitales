@@ -1,24 +1,25 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { createServerSupabaseClient } from "@/lib/supabase"
+import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs"
+import { cookies } from "next/headers"
 
 // GET - Obtener todas las firmas del usuario actual
 export async function GET(request: NextRequest) {
   try {
-    const supabase = createServerSupabaseClient()
+    // Crear el cliente de Supabase con el manejador de cookies correcto
+    const cookieStore = cookies()
+    const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
 
-    // Obtener el usuario actual directamente de Supabase
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
+    // Obtener el usuario actual usando el token de sesión
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession()
 
-    if (!user) {
+    if (sessionError || !session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
     const { data, error } = await supabase
       .from("signatures")
       .select("*")
-      .eq("user_id", user.id)
+      .eq("user_id", session.user.id)
       .order("created_at", { ascending: false })
 
     if (error) {
@@ -35,14 +36,14 @@ export async function GET(request: NextRequest) {
 // POST - Crear una nueva firma para el usuario actual
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createServerSupabaseClient()
+    // Crear el cliente de Supabase con el manejador de cookies correcto
+    const cookieStore = cookies()
+    const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
 
-    // Obtener el usuario actual directamente de Supabase
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
+    // Obtener el usuario actual usando el token de sesión
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession()
 
-    if (!user) {
+    if (sessionError || !session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
@@ -61,7 +62,7 @@ export async function POST(request: NextRequest) {
         signature_data,
         logo_url,
         photo_url,
-        user_id: user.id,
+        user_id: session.user.id,
       })
       .select()
 

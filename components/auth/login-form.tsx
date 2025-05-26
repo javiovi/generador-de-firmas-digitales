@@ -38,7 +38,7 @@ export default function LoginForm() {
     }
 
     // Validación local
-    if (email === "admin@identymail.com" && password === "admin123") {
+    if (email === "admin@rubrica.com" && password === "admin123") {
       localStorage.setItem("isLoggedIn", "true")
       console.log("isLoggedIn guardado en localStorage")
       toast({
@@ -65,14 +65,14 @@ export default function LoginForm() {
 
   return (
     <div className="mx-auto w-full max-w-md rounded-2xl bg-white/80 backdrop-blur-sm p-8 shadow-xl border border-rose-100">
-      <div className="mb-8 flex justify-center">
+      <div className="flex justify-center">
         <Image
-          src="/images/identy-logo-transparente.png"
-          alt="Identymail"
-          width={180}
-          height={60}
+          src="/images/rubrica-logo.png"
+          alt="Rubrica Logo"
+          width={320}
+          height={200}
           priority
-          className="h-auto w-auto"
+          className="h-30 w-auto"
         />
       </div>
 

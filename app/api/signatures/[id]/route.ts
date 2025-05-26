@@ -1,23 +1,28 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { createServerSupabaseClient } from "@/lib/supabase"
+import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs"
+import { cookies } from "next/headers"
 
 // GET - Obtener una firma por ID (verificando que pertenezca al usuario)
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const supabase = createServerSupabaseClient()
+    const cookieStore = cookies()
+    const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
 
-    // Obtener el usuario actual directamente de Supabase
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
+    // Obtener el usuario actual usando el token de sesión
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession()
 
-    if (!user) {
+    if (sessionError || !session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
     const id = params.id
 
-    const { data, error } = await supabase.from("signatures").select("*").eq("id", id).eq("user_id", user.id).single()
+    const { data, error } = await supabase
+      .from("signatures")
+      .select("*")
+      .eq("id", id)
+      .eq("user_id", session.user.id)
+      .single()
 
     if (error) {
       if (error.code === "PGRST116") {
@@ -36,14 +41,13 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 // PUT - Actualizar una firma (verificando que pertenezca al usuario)
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const supabase = createServerSupabaseClient()
+    const cookieStore = cookies()
+    const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
 
-    // Obtener el usuario actual directamente de Supabase
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
+    // Obtener el usuario actual usando el token de sesión
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession()
 
-    if (!user) {
+    if (sessionError || !session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
@@ -69,7 +73,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       throw fetchError
     }
 
-    if (existingSignature.user_id !== user.id) {
+    if (existingSignature.user_id !== session.user.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
     }
 
@@ -104,14 +108,13 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 // DELETE - Eliminar una firma (verificando que pertenezca al usuario)
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const supabase = createServerSupabaseClient()
+    const cookieStore = cookies()
+    const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
 
-    // Obtener el usuario actual directamente de Supabase
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
+    // Obtener el usuario actual usando el token de sesión
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession()
 
-    if (!user) {
+    if (sessionError || !session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
@@ -131,7 +134,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
       throw fetchError
     }
 
-    if (existingSignature.user_id !== user.id) {
+    if (existingSignature.user_id !== session.user.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
     }
 

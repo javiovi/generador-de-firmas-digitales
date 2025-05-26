@@ -155,211 +155,211 @@ function generateHtmlCode(
   const bgColor = "#ffffff" // Siempre blanco
   const borderColor = "#e5e7eb" // Gris claro para bordes
 
-  // Filtrar redes sociales habilitadas
+    // Filtrar redes sociales habilitadas
   const enabledSocialNetworks = Object.entries(signature.socialLinks)
-    .filter(([_, data]) => data.enabled)
-    .map(([network, data]) => ({ network, url: data.url }))
+      .filter(([_, data]) => data.enabled)
+      .map(([network, data]) => ({ network, url: data.url }))
 
-  // Estilos responsivos para el encabezado
-  const responsiveStyles = isResponsive
-    ? `
-      @media screen and (max-width: 600px) {
-        table.signature-table {
-          width: 100% !important;
-        }
-        td.signature-photo, td.signature-logo {
-          display: block !important;
-          width: 100% !important;
-          text-align: center !important;
-        }
-        td.signature-content {
-          display: block !important;
-          width: 100% !important;
-          padding-left: 0 !important;
-          padding-top: 15px !important;
-          border-left: none !important;
+    // Estilos responsivos para el encabezado
+    const responsiveStyles = isResponsive
+      ? `
+        @media screen and (max-width: 600px) {
+          table.signature-table {
+            width: 100% !important;
+          }
+          td.signature-photo, td.signature-logo {
+            display: block !important;
+            width: 100% !important;
+            text-align: center !important;
+          }
+          td.signature-content {
+            display: block !important;
+            width: 100% !important;
+            padding-left: 0 !important;
+            padding-top: 15px !important;
+            border-left: none !important;
           border-top: 3px solid ${signature.primaryColor} !important;
+          }
+          img.signature-profile-image {
+            margin: 0 auto !important;
+          }
+          .signature-social-icons {
+            text-align: center !important;
+          }
         }
-        img.signature-profile-image {
-          margin: 0 auto !important;
-        }
-        .signature-social-icons {
-          text-align: center !important;
-        }
-      }
-    `
-    : ""
+      `
+      : ""
 
-  // Generar HTML según la plantilla
-  let socialHtml = ""
-  if (enabledSocialNetworks.length > 0) {
-    socialHtml = `
-<tr>
-  <td style="padding: 10px 0 0 0;">
-    <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
-      <tr>
-        ${enabledSocialNetworks
-          .map(({ network, url }) => {
-            // Usar SVG para todos los iconos sociales
-            let svgIcon = ""
-            switch (network) {
-              case "facebook":
+    // Generar HTML según la plantilla
+    let socialHtml = ""
+    if (enabledSocialNetworks.length > 0) {
+      socialHtml = `
+    <tr>
+      <td style="padding: 10px 0 0 0;">
+        <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
+          <tr>
+            ${enabledSocialNetworks
+              .map(({ network, url }) => {
+                // Usar SVG para todos los iconos sociales
+                let svgIcon = ""
+                switch (network) {
+                  case "facebook":
                 svgIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${signature.primaryColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>`
-                break
-              case "instagram":
+                    break
+                  case "instagram":
                 svgIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${signature.primaryColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>`
-                break
-              case "youtube":
+                    break
+                  case "youtube":
                 svgIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${signature.primaryColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg>`
-                break
-              case "linkedin":
+                    break
+                  case "linkedin":
                 svgIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${signature.primaryColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>`
-                break
-              case "twitter":
-                // Icono de X actualizado
+                    break
+                  case "twitter":
+                    // Icono de X actualizado
                 svgIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${signature.primaryColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"></path></svg>`
-                break
-            }
-            return `
-            <td style="padding-right: 10px;">
-              <a href="${url}" target="_blank" style="text-decoration: none;">
+                    break
+                }
+                return `
+                <td style="padding-right: 10px;">
+                  <a href="${url}" target="_blank" style="text-decoration: none;">
                 <div style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; color: ${signature.primaryColor};">
-                  ${svgIcon}
-                </div>
-              </a>
-            </td>
-          `
-          })
-          .join("")}
-      </tr>
-    </table>
-  </td>
-</tr>
-`
-  }
+                      ${svgIcon}
+                    </div>
+                  </a>
+                </td>
+              `
+              })
+              .join("")}
+          </tr>
+        </table>
+      </td>
+    </tr>
+  `
+    }
 
-  // Generar HTML según la posición de las imágenes
-  let htmlContent = ""
+    // Generar HTML según la posición de las imágenes
+    let htmlContent = ""
 let tableContent = ""
 
-  switch (template.id) {
-    case TemplateType.CLASSIC:
+    switch (template.id) {
+      case TemplateType.CLASSIC:
     tableContent = `
 <table cellpadding="0" cellspacing="0" border="0" class="signature-table" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0; width: 400px; color-scheme: light;">
   <tr>
     <td class="signature-logo" style="padding-right: 10px; vertical-align: top; width: 110px; background: white;">
-      <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
-        <tr>
+        <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
+          <tr>
           <td style="padding: 0 0 6px 0; text-align: center;">
           <img src="${signature.logoUrl}" alt="${signature.company}" width="${signature.logoSize}" style="width: ${signature.logoSize}px; max-width: ${signature.logoSize}px; display: block;" />
-          </td>
-        </tr>
-        <tr>
-          <td style="padding: 0; text-align: center;">
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 0; text-align: center;">
           <img src="${signature.photoUrl}" alt="${signature.name}" width="${signature.photoSize}" height="${signature.photoSize}" class="signature-profile-image" style="width: ${signature.photoSize}px; height: ${signature.photoSize}px; max-width: ${signature.photoSize}px; border-radius: 70px; border: 3px solid ${signature.primaryColor}; display: block;" />
-          </td>
-        </tr>
-      </table>
-    </td>
+            </td>
+          </tr>
+        </table>
+      </td>
     <td class="signature-content" style="padding-left: 10px; border-left: 2px solid ${signature.primaryColor}; vertical-align: top; background: white;">
-      <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0; width: 100%;">
-        <tr>
+        <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0; width: 100%;">
+          <tr>
           <td style="padding: 0 0 2px 0;">
             <div style="font-family: Arial, sans-serif; font-size: 17px; font-weight: bold; color: ${textColor}; margin: 0; line-height:1.2;">${signature.name}</div>
-          </td>
-        </tr>
-        <tr>
+            </td>
+          </tr>
+          <tr>
           <td style="padding: 0 0 8px 0;">
             <div style="font-family: Arial, sans-serif; font-size: 13px; font-weight: bold; color: ${signature.primaryColor}; margin: 0; line-height:1.2;">${signature.position}</div>
             <div style="border-bottom: 2px solid ${signature.primaryColor}; margin-top: 3px; width: 200px;"></div>
-          </td>
-        </tr>
-        <tr>
+            </td>
+          </tr>
+          <tr>
           <td style="padding: 0 0 4px 0;">
-            <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
-              <tr>
+              <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
+                <tr>
                 <td width="18" style="vertical-align: middle; padding-right: 4px; background: white;">
                   <div style="width:16px;height:16px;display:flex;align-items:center;justify-content:center;">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${signature.primaryColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                      <circle cx="12" cy="10" r="3"></circle>
-                    </svg>
-                  </div>
-                </td>
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                      </svg>
+                    </div>
+                  </td>
                 <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor}; margin: 0; line-height:1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                   ${signature.address}
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-        <tr>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
           <td style="padding: 0 0 4px 0;">
-            <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
-              <tr>
+              <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
+                <tr>
                 <td width="18" style="vertical-align: middle; padding-right: 4px; background: white;">
                   <div style="width:16px;height:16px;display:flex;align-items:center;justify-content:center;">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${signature.primaryColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-                    </svg>
-                  </div>
-                </td>
-                <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor};">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                      </svg>
+                    </div>
+                  </td>
+                  <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor};">
                   <a href="tel:${signature.phone}" style="color: ${textColor}; text-decoration: none;">${signature.phone}</a>
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-        <tr>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
           <td style="padding: 0 0 4px 0;">
-            <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
-              <tr>
+              <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
+                <tr>
                 <td width="18" style="vertical-align: middle; padding-right: 4px; background: white;">
                   <div style="width:16px;height:16px;display:flex;align-items:center;justify-content:center;">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${signature.primaryColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                      <polyline points="22,6 12,13 2,6"></polyline>
-                    </svg>
-                  </div>
-                </td>
-                <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor};">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                      </svg>
+                    </div>
+                  </td>
+                  <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor};">
                   <a href="mailto:${signature.email}" style="color: ${textColor}; text-decoration: none;">${signature.email}</a>
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-        <tr>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
           <td style="padding: 0 0 8px 0;">
-            <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
-              <tr>
+              <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
+                <tr>
                 <td width="18" style="vertical-align: middle; padding-right: 4px; background: white;">
                   <div style="width:16px;height:16px;display:flex;align-items:center;justify-content:center;">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${signature.primaryColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <line x1="2" y1="12" x2="22" y2="12"></line>
-                      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                    </svg>
-                  </div>
-                </td>
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                      </svg>
+                    </div>
+                  </td>
                 <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${signature.primaryColor};">
                   <a href="https://${signature.website}" style="color: ${signature.primaryColor}; text-decoration: none;">${signature.website}</a>
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-        <tr>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
           <td class="signature-social-icons" style="padding-top: 2px; background: white;">
-            ${socialHtml}
-          </td>
-        </tr>
-      </table>
-    </td>
-  </tr>
+              ${socialHtml}
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
 </table>`
-    htmlContent = `<!DOCTYPE html>
+        htmlContent = `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -378,319 +378,319 @@ ${tableContent}
     case TemplateType.MODERN:
     tableContent = `
 <table cellpadding="0" cellspacing="0" border="0" class="signature-table" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0; width: 400px;">
-  <tr>
-    <td class="signature-logo" style="padding-right: 15px; vertical-align: top;">
-      <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
-        <tr>
-          <td style="padding: 0 0 10px 0;">
+    <tr>
+      <td class="signature-logo" style="padding-right: 15px; vertical-align: top;">
+        <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
+          <tr>
+            <td style="padding: 0 0 10px 0;">
           <img src="${signature.logoUrl}" alt="${signature.company}" width="${signature.logoSize}" style="width: ${signature.logoSize}px; max-width: ${signature.logoSize}px; display: block;">
-          </td>
-        </tr>
-      </table>
-    </td>
+            </td>
+          </tr>
+        </table>
+      </td>
     <td class="signature-content" style="padding: 0 15px; border-left: 2px solid ${signature.primaryColor}; border-right: 2px solid ${signature.primaryColor}; vertical-align: top;">
-      <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
-        <tr>
-          <td style="padding: 0 0 5px 0;">
+        <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
+          <tr>
+            <td style="padding: 0 0 5px 0;">
             <div style="font-family: Arial, sans-serif; font-size: 18px; font-weight: bold; color: ${textColor}; margin: 0;">${signature.name}</div>
-          </td>
-        </tr>
-        <tr>
-          <td style="padding: 0 0 10px 0;">
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 0 0 10px 0;">
             <div style="font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; color: ${signature.primaryColor}; margin: 0;">${signature.position}</div>
-          </td>
-        </tr>
-        <tr>
-          <td style="padding: 0 0 10px 0;">
-            <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
-              <tr>
-                <td width="20" style="vertical-align: top; padding-right: 5px;">
-                  <div style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 0 0 10px 0;">
+              <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
+                <tr>
+                  <td width="20" style="vertical-align: top; padding-right: 5px;">
+                    <div style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${textColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                      <circle cx="12" cy="10" r="3"></circle>
-                    </svg>
-                  </div>
-                </td>
-                <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor}; margin: 0;">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                      </svg>
+                    </div>
+                  </td>
+                  <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor}; margin: 0;">
                   ${signature.address}
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-        <tr>
-          <td style="padding: 0 0 5px 0;">
-            <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
-              <tr>
-                <td width="20" style="vertical-align: top; padding-right: 5px;">
-                  <div style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 0 0 5px 0;">
+              <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
+                <tr>
+                  <td width="20" style="vertical-align: top; padding-right: 5px;">
+                    <div style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${textColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-                    </svg>
-                  </div>
-                </td>
-                <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor};">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                      </svg>
+                    </div>
+                  </td>
+                  <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor};">
                   <a href="tel:${signature.phone}" style="color: ${textColor}; text-decoration: none;">${signature.phone}</a>
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-        <tr>
-          <td style="padding: 0 0 5px 0;">
-            <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
-              <tr>
-                <td width="20" style="vertical-align: top; padding-right: 5px;">
-                  <div style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 0 0 5px 0;">
+              <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
+                <tr>
+                  <td width="20" style="vertical-align: top; padding-right: 5px;">
+                    <div style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${textColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                      <polyline points="22,6 12,13 2,6"></polyline>
-                    </svg>
-                  </div>
-                </td>
-                <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor};">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                      </svg>
+                    </div>
+                  </td>
+                  <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor};">
                   <a href="mailto:${signature.email}" style="color: ${textColor}; text-decoration: none;">${signature.email}</a>
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-        <tr>
-          <td style="padding: 0 0 5px 0;">
-            <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
-              <tr>
-                <td width="20" style="vertical-align: top; padding-right: 5px;">
-                  <div style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 0 0 5px 0;">
+              <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
+                <tr>
+                  <td width="20" style="vertical-align: top; padding-right: 5px;">
+                    <div style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${signature.primaryColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <line x1="2" y1="12" x2="22" y2="12"></line>
-                      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                    </svg>
-                  </div>
-                </td>
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                      </svg>
+                    </div>
+                  </td>
                 <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${signature.primaryColor};">
                   <a href="https://${signature.website}" style="color: ${signature.primaryColor}; text-decoration: none;">${signature.website}</a>
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-        <tr>
-          <td class="signature-social-icons">
-            ${socialHtml}
-          </td>
-        </tr>
-      </table>
-    </td>
-    <td class="signature-photo" style="padding-left: 15px; vertical-align: top;">
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td class="signature-social-icons">
+              ${socialHtml}
+            </td>
+          </tr>
+        </table>
+      </td>
+      <td class="signature-photo" style="padding-left: 15px; vertical-align: top;">
     <img src="${signature.photoUrl}" alt="${signature.name}" width="${signature.photoSize}" height="${signature.photoSize}" class="signature-profile-image" style="width: ${signature.photoSize}px; height: ${signature.photoSize}px; max-width: ${signature.photoSize}px; border-radius: 60px; border: 2px solid ${signature.primaryColor}; display: block;">
-    </td>
-  </tr>
-</table>
+      </td>
+    </tr>
+  </table>
 `
   htmlContent = tableContent
         break
 
-        case TemplateType.MINIMAL:
+      case TemplateType.MINIMAL:
         tableContent = `
 <table cellpadding="0" cellspacing="0" border="0" class="signature-table" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0; width: 400px;">
-  <tr>
-    <td class="signature-logo" style="padding-right: 15px; vertical-align: top;">
+    <tr>
+      <td class="signature-logo" style="padding-right: 15px; vertical-align: top;">
       <img src="${signature.logoUrl}" alt="${signature.company}" width="100" style="width: 100px; max-width: 100px; display: block;">
-    </td>
-    <td class="signature-content" style="vertical-align: top;">
-      <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
-        <tr>
-          <td style="padding: 0 0 5px 0;">
+      </td>
+      <td class="signature-content" style="vertical-align: top;">
+        <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
+          <tr>
+            <td style="padding: 0 0 5px 0;">
             <div style="font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; color: ${textColor}; margin: 0;">${signature.name}</div>
-          </td>
-        </tr>
-        <tr>
-          <td style="padding: 0 0 10px 0;">
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 0 0 10px 0;">
             <div style="font-family: Arial, sans-serif; font-size: 12px; color: ${signature.primaryColor}; margin: 0;">${signature.position}</div>
-          </td>
-        </tr>
-        <tr>
-          <td style="padding: 0 0 5px 0;">
-            <div style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor}; margin: 0;">
-              <span class="minimal-contact" style="display: inline-block; margin-right: 10px;">
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 0 0 5px 0;">
+              <div style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor}; margin: 0;">
+                <span class="minimal-contact" style="display: inline-block; margin-right: 10px;">
                 <a href="tel:${signature.phone}" style="color: ${textColor}; text-decoration: none;">${signature.phone}</a>
-              </span>
-              <span class="minimal-contact" style="display: inline-block; margin-right: 10px;">
+                </span>
+                <span class="minimal-contact" style="display: inline-block; margin-right: 10px;">
                 <a href="mailto:${signature.email}" style="color: ${textColor}; text-decoration: none;">${signature.email}</a>
-              </span>
-              <span class="minimal-contact" style="display: inline-block;">
+                </span>
+                <span class="minimal-contact" style="display: inline-block;">
                 <a href="https://${signature.website}" style="color: ${signature.primaryColor}; text-decoration: none;">${signature.website}</a>
-              </span>
-            </div>
-          </td>
-        </tr>
-        ${
-          enabledSocialNetworks.length > 0
-            ? `
-        <tr>
-          <td class="signature-social-icons" style="padding: 5px 0 0 0;">
-            <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
-              <tr>
-                ${enabledSocialNetworks
-                  .map(({ network, url }) => {
-                    // Usar SVG para todos los iconos sociales
-                    let svgIcon = ""
-                    switch (network) {
-                      case "facebook":
+                </span>
+              </div>
+            </td>
+          </tr>
+          ${
+            enabledSocialNetworks.length > 0
+              ? `
+          <tr>
+            <td class="signature-social-icons" style="padding: 5px 0 0 0;">
+              <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
+                <tr>
+                  ${enabledSocialNetworks
+                    .map(({ network, url }) => {
+                      // Usar SVG para todos los iconos sociales
+                      let svgIcon = ""
+                      switch (network) {
+                        case "facebook":
                         svgIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${signature.primaryColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>`
-                        break
-                      case "instagram":
+                          break
+                        case "instagram":
                         svgIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${signature.primaryColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>`
-                        break
-                      case "youtube":
+                          break
+                        case "youtube":
                         svgIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${signature.primaryColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg>`
-                        break
-                      case "linkedin":
+                          break
+                        case "linkedin":
                         svgIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${signature.primaryColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>`
-                        break
-                      case "twitter":
+                          break
+                        case "twitter":
                         svgIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${signature.primaryColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"></path></svg>`
-                        break
-                    }
-                    return `
-                    <td style="padding-right: 8px;">
-                      <a href="${url}" target="_blank" style="text-decoration: none;">
-                        <div style="width: 18px; height: 18px; display: flex; align-items: center; justify-content: center;">
-                          ${svgIcon}
-                        </div>
-                      </a>
-                    </td>
-                  `
-                  })
-                  .join("")}
-              </tr>
-            </table>
-          </td>
-        </tr>
-        `
-            : ""
-        }
-      </table>
-    </td>
-  </tr>
-</table>
+                          break
+                      }
+                      return `
+                      <td style="padding-right: 8px;">
+                        <a href="${url}" target="_blank" style="text-decoration: none;">
+                          <div style="width: 18px; height: 18px; display: flex; align-items: center; justify-content: center;">
+                            ${svgIcon}
+                          </div>
+                        </a>
+                      </td>
+                    `
+                    })
+                    .join("")}
+                </tr>
+              </table>
+            </td>
+          </tr>
+          `
+              : ""
+          }
+        </table>
+      </td>
+    </tr>
+  </table>
 `
   htmlContent = tableContent
         break
 
-        case TemplateType.CORPORATE:
+      case TemplateType.CORPORATE:
         tableContent = `
 <table cellpadding="0" cellspacing="0" border="0" class="signature-table" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0; ${template.showBorder ? `border: 1px solid ${signature.primaryColor};` : ""} width: 400px;">
   <tr>
     <td class="corporate-header" style="padding: 10px; text-align: center; background-color: ${signature.primaryColor}; color: white;" colspan="2">
       <img src="${signature.logoUrl}" alt="${signature.company}" width="180" style="width: 180px; max-width: 180px; display: inline-block;">
-    </td>
-  </tr>
-  <tr>
-    <td class="signature-photo corporate-content" style="padding: 15px; vertical-align: top; width: 150px;">
+      </td>
+    </tr>
+    <tr>
+      <td class="signature-photo corporate-content" style="padding: 15px; vertical-align: top; width: 150px;">
       <img src="${signature.photoUrl}" alt="${signature.name}" width="150" height="150" class="signature-profile-image" style="width: 150px; height: 150px; max-width: 150px; display: block;">
-    </td>
-    <td class="signature-content corporate-content" style="padding: 15px; vertical-align: top;">
-      <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0; width: 100%;">
-        <tr>
-          <td style="padding: 0 0 5px 0;">
+      </td>
+      <td class="signature-content corporate-content" style="padding: 15px; vertical-align: top;">
+        <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0; width: 100%;">
+          <tr>
+            <td style="padding: 0 0 5px 0;">
             <div style="font-family: Arial, sans-serif; font-size: 18px; font-weight: bold; color: ${textColor}; margin: 0;">${signature.name}</div>
-          </td>
-        </tr>
-        <tr>
-          <td style="padding: 0 0 15px 0;">
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 0 0 15px 0;">
             <div style="font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; color: ${signature.primaryColor}; margin: 0;">${signature.position}</div>
             <div style="border-bottom: 2px solid ${signature.primaryColor}; margin-top: 5px; width: 50px;"></div>
-          </td>
-        </tr>
-        <tr>
-          <td style="padding: 0 0 10px 0;">
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 0 0 10px 0;">
             <div style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor}; margin: 0;">${signature.company}</div>
-            <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
-              <tr>
-                <td width="20" style="vertical-align: top; padding-right: 5px;">
-                  <div style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
+              <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
+                <tr>
+                  <td width="20" style="vertical-align: top; padding-right: 5px;">
+                    <div style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${textColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                      <circle cx="12" cy="10" r="3"></circle>
-                    </svg>
-                  </div>
-                </td>
-                <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor}; margin: 0;">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                      </svg>
+                    </div>
+                  </td>
+                  <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor}; margin: 0;">
                   ${signature.address}
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-        <tr>
-          <td style="padding: 0 0 5px 0;">
-            <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
-              <tr>
-                <td width="20" style="vertical-align: top; padding-right: 5px;">
-                  <div style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 0 0 5px 0;">
+              <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
+                <tr>
+                  <td width="20" style="vertical-align: top; padding-right: 5px;">
+                    <div style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${textColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-                    </svg>
-                  </div>
-                </td>
-                <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor};">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                      </svg>
+                    </div>
+                  </td>
+                  <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor};">
                   <a href="tel:${signature.phone}" style="color: ${textColor}; text-decoration: none;">${signature.phone}</a>
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-        <tr>
-          <td style="padding: 0 0 5px 0;">
-            <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
-              <tr>
-                <td width="20" style="vertical-align: top; padding-right: 5px;">
-                  <div style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 0 0 5px 0;">
+              <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
+                <tr>
+                  <td width="20" style="vertical-align: top; padding-right: 5px;">
+                    <div style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${textColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                      <polyline points="22,6 12,13 2,6"></polyline>
-                    </svg>
-                  </div>
-                </td>
-                <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor};">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                      </svg>
+                    </div>
+                  </td>
+                  <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${textColor};">
                   <a href="mailto:${signature.email}" style="color: ${textColor}; text-decoration: none;">${signature.email}</a>
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-        <tr>
-          <td style="padding: 0 0 10px 0;">
-            <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
-              <tr>
-                <td width="20" style="vertical-align: top; padding-right: 5px;">
-                  <div style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 0 0 10px 0;">
+              <table cellpadding="0" cellspacing="0" border="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 0;">
+                <tr>
+                  <td width="20" style="vertical-align: top; padding-right: 5px;">
+                    <div style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${signature.primaryColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <line x1="2" y1="12" x2="22" y2="12"></line>
-                      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                    </svg>
-                  </div>
-                </td>
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                      </svg>
+                    </div>
+                  </td>
                 <td style="font-family: Arial, sans-serif; font-size: 12px; color: ${signature.primaryColor};">
                   <a href="https://${signature.website}" style="color: ${signature.primaryColor}; text-decoration: none;">${signature.website}</a>
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-        <tr>
-          <td class="signature-social-icons">
-            ${socialHtml}
-          </td>
-        </tr>
-      </table>
-    </td>
-  </tr>
-</table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td class="signature-social-icons">
+              ${socialHtml}
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
 `
       htmlContent = tableContent
         break
@@ -728,7 +728,7 @@ export function generateHtmlCodeWithPngIcons(
   mode: 'preview' | 'export' = 'preview'
 ): string {
   const primaryColor = signature.primaryColor || '#000000'
-  const baseUrl = "https://identymail.vercel.app"
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
   
   // Asegurar que las URLs de las imágenes sean absolutas
   const logoUrl = ensureAbsoluteUrl(signature.logoUrl, baseUrl)
@@ -736,63 +736,80 @@ export function generateHtmlCodeWithPngIcons(
 
   // Generar URLs para los iconos de contacto como PNG
   const contactIcons = {
-    address: `${baseUrl}/api/icon?type=address&color=${encodeURIComponent(primaryColor)}&size=64&format=png`,
-    phone: `${baseUrl}/api/icon?type=phone&color=${encodeURIComponent(primaryColor)}&size=64&format=png`,
-    mail: `${baseUrl}/api/icon?type=mail&color=${encodeURIComponent(primaryColor)}&size=64&format=png`,
-    web: `${baseUrl}/api/icon?type=web&color=${encodeURIComponent(primaryColor)}&size=64&format=png`
+    address: `${baseUrl}/api/icon?type=address&color=${encodeURIComponent(primaryColor)}&size=15&format=png`,
+    phone: `${baseUrl}/api/icon?type=phone&color=${encodeURIComponent(primaryColor)}&size=15&format=png`,
+    mail: `${baseUrl}/api/icon?type=mail&color=${encodeURIComponent(primaryColor)}&size=15&format=png`,
+    web: `${baseUrl}/api/icon?type=web&color=${encodeURIComponent(primaryColor)}&size=15&format=png`
   }
 
   // Generar URLs para los iconos sociales como PNG
-  const socialIcons = Object.entries(signature.socialLinks)
-    .filter(([_, link]) => link.enabled && link.url)
-    .map(([platform, link]) => ({
-      platform,
-      url: link.url,
-      iconUrl: `${baseUrl}/api/icon?type=${platform.toLowerCase()}&color=${encodeURIComponent(primaryColor)}&size=64&format=png`
-    }))
+  const socialIcons = {
+    facebook: `${baseUrl}/api/icon?type=facebook&color=${encodeURIComponent(primaryColor)}&size=15&format=png`,
+    instagram: `${baseUrl}/api/icon?type=instagram&color=${encodeURIComponent(primaryColor)}&size=15&format=png`,
+    linkedin: `${baseUrl}/api/icon?type=linkedin&color=${encodeURIComponent(primaryColor)}&size=15&format=png`,
+    twitter: `${baseUrl}/api/icon?type=twitter&color=${encodeURIComponent(primaryColor)}&size=15&format=png`,
+    youtube: `${baseUrl}/api/icon?type=youtube&color=${encodeURIComponent(primaryColor)}&size=15&format=png`
+  }
 
   // Generar el HTML base
   let html = generateHtmlCode(signature)
 
-  // Reemplazar los iconos SVG por imágenes PNG de 15x15
+  // Reemplazo específico para cada ícono de contacto
+  // Address
   html = html.replace(
-    /<svg[^>]*>[^<]*<\/svg>/g,
-    (match, type) => {
-      // Determinar el tipo de icono basado en el contenido del SVG
-      let iconType = 'address'
-      if (match.includes('phone')) iconType = 'phone'
-      else if (match.includes('mail')) iconType = 'mail'
-      else if (match.includes('globe')) iconType = 'web'
-      else if (match.includes('facebook')) iconType = 'facebook'
-      else if (match.includes('instagram')) iconType = 'instagram'
-      else if (match.includes('linkedin')) iconType = 'linkedin'
-      else if (match.includes('twitter') || match.includes('M18 6L6 18')) iconType = 'twitter'
-      else if (match.includes('youtube')) iconType = 'youtube'
-
-      const iconUrl = contactIcons[iconType as keyof typeof contactIcons] || 
-                     socialIcons.find(s => s.platform.toLowerCase() === iconType)?.iconUrl
-
-      if (iconUrl) {
-        return `<img src="${iconUrl}" alt="${iconType}" width="15" height="15" style="display: inline-block !important; vertical-align: middle !important;" border="0" />`
-      }
-      return match
-    }
+    /<svg[^>]*>\s*<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"[^>]*><\/path>\s*<circle cx="12" cy="10" r="3"><\/circle>\s*<\/svg>/g,
+    `<img src="${contactIcons.address}" alt="address" width="15" height="15" style="display: inline-block !important; vertical-align: middle !important;" border="0" />`
+  )
+  // Phone
+  html = html.replace(
+    /<svg[^>]*>\s*<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"[^>]*><\/path>\s*<\/svg>/g,
+    `<img src="${contactIcons.phone}" alt="phone" width="15" height="15" style="display: inline-block !important; vertical-align: middle !important;" border="0" />`
+  )
+  // Mail
+  html = html.replace(
+    /<svg[^>]*>\s*<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"[^>]*><\/path>\s*<polyline points="22,6 12,13 2,6"><\/polyline>\s*<\/svg>/g,
+    `<img src="${contactIcons.mail}" alt="mail" width="15" height="15" style="display: inline-block !important; vertical-align: middle !important;" border="0" />`
+  )
+  // Web
+  html = html.replace(
+    /<svg[^>]*>\s*<circle cx="12" cy="12" r="10"><\/circle>\s*<line x1="2" y1="12" x2="22" y2="12"><\/line>\s*<path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"><\/path>\s*<\/svg>/g,
+    `<img src="${contactIcons.web}" alt="web" width="15" height="15" style="display: inline-block !important; vertical-align: middle !important;" border="0" />`
   )
 
-  // Asegurar que todas las imágenes tengan los atributos necesarios y tamaño 15x15
+  // Reemplazar los iconos sociales SVG por PNG (patrones específicos)
+  // Facebook
+  html = html.replace(
+    /<svg[^>]*>\s*<path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"[^>]*><\/path>\s*<\/svg>/g,
+    `<img src="${socialIcons.facebook}" alt="facebook" width="15" height="15" style="display: inline-block !important; vertical-align: middle !important;" border="0" />`
+  )
+  // Instagram
+  html = html.replace(
+    /<svg[^>]*>\s*<rect x="2" y="2" width="20" height="20" rx="5" ry="5"><\/rect>\s*<path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"><\/path>\s*<line x1="17.5" y1="6.5" x2="17.51" y2="6.5"><\/line>\s*<\/svg>/g,
+    `<img src="${socialIcons.instagram}" alt="instagram" width="15" height="15" style="display: inline-block !important; vertical-align: middle !important;" border="0" />`
+  )
+  // Youtube
+  html = html.replace(
+    /<svg[^>]*>\s*<path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"[^>]*><\/path>\s*<polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"><\/polygon>\s*<\/svg>/g,
+    `<img src="${socialIcons.youtube}" alt="youtube" width="15" height="15" style="display: inline-block !important; vertical-align: middle !important;" border="0" />`
+  )
+  // Linkedin
+  html = html.replace(
+    /<svg[^>]*>\s*<path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"[^>]*><\/path>\s*<rect x="2" y="9" width="4" height="12"><\/rect>\s*<circle cx="4" cy="4" r="2"><\/circle>\s*<\/svg>/g,
+    `<img src="${socialIcons.linkedin}" alt="linkedin" width="15" height="15" style="display: inline-block !important; vertical-align: middle !important;" border="0" />`
+  )
+  // Twitter/X
+  html = html.replace(
+    /<svg[^>]*>\s*<path d="M18 6L6 18M6 6l12 12"><\/path>\s*<\/svg>/g,
+    `<img src="${socialIcons.twitter}" alt="twitter" width="15" height="15" style="display: inline-block !important; vertical-align: middle !important;" border="0" />`
+  )
+
+  // Asegurar que todas las imágenes tengan los atributos necesarios
   html = html.replace(
     /<img([^>]*)>/g,
     (match, attributes) => {
-      if (!attributes.includes('width=')) attributes += ' width="15"'
-      if (!attributes.includes('height=')) attributes += ' height="15"'
       if (!attributes.includes('border=')) attributes += ' border="0"'
       if (!attributes.includes('style=')) {
         attributes += ' style="display: inline-block !important; vertical-align: middle !important;"'
-      } else {
-        attributes = attributes.replace(
-          /style="([^"]*)"/,
-          'style="$1; display: inline-block !important; vertical-align: middle !important;"'
-        )
       }
       return `<img${attributes}>`
     }

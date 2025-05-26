@@ -18,7 +18,8 @@ export async function generateAndUploadIcons(color: string, background: "light" 
   const urls: Record<string, string> = {};
   for (const [name, svg] of Object.entries(ICONS)) {
     const pngBlob = await svgToPngBlob(svg, color, 15, background);
-    const file = new File([pngBlob], `${name}.png`, { type: "image/png" });
+    const uniqueFileName = `${name}-${color.replace('#', '')}-${Date.now()}.png`;
+    const file = new File([pngBlob], uniqueFileName, { type: "image/png" });
     const url = await uploadFile(file, "icons");
     urls[name] = url;
   }

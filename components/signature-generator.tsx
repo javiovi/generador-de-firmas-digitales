@@ -72,7 +72,6 @@ import EmailClientGuides from "@/components/email-client-guides"
 import CollaborationFeatures from "@/components/collaboration-features"
 import EmailClientPreview from "@/components/email-client-preview"
 import { generatePngUrl } from "@/lib/svg-to-png"
-import { generateAndUploadIcons } from "@/lib/icon-upload"
 
 // Definir la interfaz para los enlaces sociales
 interface SocialLink {
@@ -726,99 +725,71 @@ ${tableContent}
 
 export function generateHtmlCodeWithPngIcons(
   signature: Signature,
-  iconUrls: Record<string, string> = {},
+  _iconUrls: Record<string, string> = {},
   mode: 'preview' | 'export' = 'preview'
 ): string {
   const primaryColor = signature.primaryColor || '#000000'
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
-  
-  // Asegurar que las URLs de las imágenes sean absolutas
-  const logoUrl = ensureAbsoluteUrl(signature.logoUrl, baseUrl)
-  const photoUrl = ensureAbsoluteUrl(signature.photoUrl, baseUrl)
+  const baseUrl = 'https://rubrica.ar'
+  const size = 15
 
   // Generar URLs para los iconos de contacto como PNG
   const contactIcons = {
-    address: iconUrls.address || '',
-    phone: iconUrls.phone || '',
-    mail: iconUrls.mail || '',
-    web: iconUrls.web || ''
+    address: `${baseUrl}/api/icon?type=address&color=${encodeURIComponent(primaryColor)}&size=${size}&format=png`,
+    phone: `${baseUrl}/api/icon?type=phone&color=${encodeURIComponent(primaryColor)}&size=${size}&format=png`,
+    mail: `${baseUrl}/api/icon?type=mail&color=${encodeURIComponent(primaryColor)}&size=${size}&format=png`,
+    web: `${baseUrl}/api/icon?type=web&color=${encodeURIComponent(primaryColor)}&size=${size}&format=png`
   }
 
   // Generar URLs para los iconos sociales como PNG
   const socialIcons = {
-    facebook: iconUrls.facebook || '',
-    instagram: iconUrls.instagram || '',
-    linkedin: iconUrls.linkedin || '',
-    twitter: iconUrls.twitter || '',
-    youtube: iconUrls.youtube || ''
+    facebook: `${baseUrl}/api/icon?type=facebook&color=${encodeURIComponent(primaryColor)}&size=${size}&format=png`,
+    instagram: `${baseUrl}/api/icon?type=instagram&color=${encodeURIComponent(primaryColor)}&size=${size}&format=png`,
+    linkedin: `${baseUrl}/api/icon?type=linkedin&color=${encodeURIComponent(primaryColor)}&size=${size}&format=png`,
+    twitter: `${baseUrl}/api/icon?type=twitter&color=${encodeURIComponent(primaryColor)}&size=${size}&format=png`,
+    youtube: `${baseUrl}/api/icon?type=youtube&color=${encodeURIComponent(primaryColor)}&size=${size}&format=png`
   }
 
   // Generar el HTML base
   let html = generateHtmlCode(signature)
 
   // Reemplazo específico para cada ícono de contacto
-  // Address
   html = html.replace(
     /<svg[^>]*>\s*<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"[^>]*><\/path>\s*<circle cx="12" cy="10" r="3"><\/circle>\s*<\/svg>/g,
     `<img src="${contactIcons.address}" alt="address" width="15" height="15" style="display: inline-block !important; vertical-align: middle !important;" border="0" />`
   )
-  // Phone
   html = html.replace(
     /<svg[^>]*>\s*<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"[^>]*><\/path>\s*<\/svg>/g,
-    contactIcons.phone
-      ? `<img src="${contactIcons.phone}" alt="phone" width="15" height="15" style="display: inline-block !important; vertical-align: middle !important;" border="0" />`
-      : ""
+    `<img src="${contactIcons.phone}" alt="phone" width="15" height="15" style="display: inline-block !important; vertical-align: middle !important;" border="0" />`
   )
-  // Mail
   html = html.replace(
     /<svg[^>]*>\s*<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"[^>]*><\/path>\s*<polyline points="22,6 12,13 2,6"><\/polyline>\s*<\/svg>/g,
-    contactIcons.mail
-      ? `<img src="${contactIcons.mail}" alt="mail" width="15" height="15" style="display: inline-block !important; vertical-align: middle !important;" border="0" />`
-      : ""
+    `<img src="${contactIcons.mail}" alt="mail" width="15" height="15" style="display: inline-block !important; vertical-align: middle !important;" border="0" />`
   )
-  // Web
   html = html.replace(
     /<svg[^>]*>\s*<circle cx="12" cy="12" r="10"><\/circle>\s*<line x1="2" y1="12" x2="22" y2="12"><\/line>\s*<path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"><\/path>\s*<\/svg>/g,
-    contactIcons.web
-      ? `<img src="${contactIcons.web}" alt="web" width="15" height="15" style="display: inline-block !important; vertical-align: middle !important;" border="0" />`
-      : ""
+    `<img src="${contactIcons.web}" alt="web" width="15" height="15" style="display: inline-block !important; vertical-align: middle !important;" border="0" />`
   )
 
   // Reemplazar los iconos sociales SVG por PNG (patrones específicos)
-  // Facebook
   html = html.replace(
     /<svg[^>]*>\s*<path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"[^>]*><\/path>\s*<\/svg>/g,
-    socialIcons.facebook
-      ? `<img src="${socialIcons.facebook}" alt="facebook" width="15" height="15" style="display: inline-block !important; vertical-align: middle !important;" border="0" />`
-      : ""
+    `<img src="${socialIcons.facebook}" alt="facebook" width="15" height="15" style="display: inline-block !important; vertical-align: middle !important;" border="0" />`
   )
-  // Instagram
   html = html.replace(
     /<svg[^>]*>\s*<rect x="2" y="2" width="20" height="20" rx="5" ry="5"><\/rect>\s*<path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"><\/path>\s*<line x1="17.5" y1="6.5" x2="17.51" y2="6.5"><\/line>\s*<\/svg>/g,
-    socialIcons.instagram
-      ? `<img src="${socialIcons.instagram}" alt="instagram" width="15" height="15" style="display: inline-block !important; vertical-align: middle !important;" border="0" />`
-      : ""
+    `<img src="${socialIcons.instagram}" alt="instagram" width="15" height="15" style="display: inline-block !important; vertical-align: middle !important;" border="0" />`
   )
-  // Youtube
   html = html.replace(
     /<svg[^>]*>\s*<path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"[^>]*><\/path>\s*<polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"><\/polygon>\s*<\/svg>/g,
-    socialIcons.youtube
-      ? `<img src="${socialIcons.youtube}" alt="youtube" width="15" height="15" style="display: inline-block !important; vertical-align: middle !important;" border="0" />`
-      : ""
+    `<img src="${socialIcons.youtube}" alt="youtube" width="15" height="15" style="display: inline-block !important; vertical-align: middle !important;" border="0" />`
   )
-  // Linkedin
   html = html.replace(
     /<svg[^>]*>\s*<path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"[^>]*><\/path>\s*<rect x="2" y="9" width="4" height="12"><\/rect>\s*<circle cx="4" cy="4" r="2"><\/circle>\s*<\/svg>/g,
-    socialIcons.linkedin
-      ? `<img src="${socialIcons.linkedin}" alt="linkedin" width="15" height="15" style="display: inline-block !important; vertical-align: middle !important;" border="0" />`
-      : ""
+    `<img src="${socialIcons.linkedin}" alt="linkedin" width="15" height="15" style="display: inline-block !important; vertical-align: middle !important;" border="0" />`
   )
-  // Twitter/X
   html = html.replace(
     /<svg[^>]*>\s*<path d="M18 6L6 18M6 6l12 12"><\/path>\s*<\/svg>/g,
-    socialIcons.twitter
-      ? `<img src="${socialIcons.twitter}" alt="twitter" width="15" height="15" style="display: inline-block !important; vertical-align: middle !important;" border="0" />`
-      : ""
+    `<img src="${socialIcons.twitter}" alt="twitter" width="15" height="15" style="display: inline-block !important; vertical-align: middle !important;" border="0" />`
   )
 
   // Asegurar que todas las imágenes tengan los atributos necesarios
@@ -884,8 +855,6 @@ export default function SignatureGenerator() {
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateType>(TemplateType.CLASSIC)
   const [isResponsive, setIsResponsive] = useState(true)
   const [inlineStyles, setInlineStyles] = useState(true)
-  // 1. Estado para las URLs de los íconos
-  const [iconUrls, setIconUrls] = useState<Record<string, string>>({});
 
   const {
     isLoading,
@@ -1002,16 +971,12 @@ export default function SignatureGenerator() {
     }
   }
 
-  // 2. Modificar handleColorChange para subir íconos y guardar URLs
-  const handleColorChange = async (color: string) => {
+  const handleColorChange = (color: string) => {
     setSignatureData((prev) => ({ ...prev, primaryColor: color }));
-    // Si tienes darkMode, pásalo aquí. Por ahora, 'light' fijo:
-    const urls = await generateAndUploadIcons(color, 'light');
-    setIconUrls(urls);
   };
 
   const copyHtmlToClipboard = async () => {
-    const html = await generateHtmlCodeWithPngIcons(signatureData, iconUrls);
+    const html = await generateHtmlCodeWithPngIcons(signatureData);
     await navigator.clipboard.writeText(html);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -1240,9 +1205,6 @@ export default function SignatureGenerator() {
     const { inlineStyles = true, exportOnlyTable = true } = options
     return await generateHtmlCodeWithPngIcons(signatureData)
   }
-
-  // 1. Utilidad para saber si todos los iconos están listos
-  const allIconsReady = Object.values(iconUrls).every(url => !!url);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -1845,7 +1807,6 @@ export default function SignatureGenerator() {
                         <Button
                           variant="outline"
                           size="sm"
-                          disabled={!allIconsReady}
                           onClick={copyHtmlToClipboard}
                           className="flex items-center gap-1 border-neutral text-text hover:bg-neutral/20"
                         >

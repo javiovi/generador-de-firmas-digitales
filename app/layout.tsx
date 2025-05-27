@@ -17,7 +17,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Rubrica - Tu firma digital en segundos",
   description: "Crea firmas de email profesionales para tu empresa en minutos con Rubrica, la forma más rápida y fácil de tener tu firma digital.",
-  generator: 'v0.dev'
+    generator: 'v0.dev'
 }
 
 export default function RootLayout({

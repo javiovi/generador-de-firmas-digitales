@@ -79,8 +79,9 @@ export async function svgToPngBlob(
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("No se pudo obtener el contexto del canvas");
 
-  // Dibuja el fondo opaco antes del SVG
-  ctx.fillStyle = background === "dark" ? "#000000" : "#FFFFFF";
+  // Forzar fondo blanco opaco antes de renderizar el SVG
+  ctx.globalCompositeOperation = "source-over";
+  ctx.fillStyle = "#FFFFFF";
   ctx.fillRect(0, 0, size, size);
 
   const v = await Canvg.fromString(ctx, coloredSvg);

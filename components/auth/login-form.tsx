@@ -63,6 +63,18 @@ export default function LoginForm() {
     setShowPassword(!showPassword)
   }
 
+  const handleGoogleLogin = async () => {
+    const supabase = createBrowserSupabaseClient();
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/auth/callback` }
+    });
+    if (error) {
+      console.error("Error al iniciar sesión con Google:", error);
+      toast({ title: t("errorLogin"), description: "Error al iniciar sesión con Google.", variant: "destructive" });
+    }
+  };
+
   return (
     <div className="mx-auto w-full max-w-md rounded-2xl bg-white/80 backdrop-blur-sm p-8 shadow-xl border border-rose-100">
       <div className="flex justify-center">
@@ -141,6 +153,11 @@ export default function LoginForm() {
                 t("login")
               )}
             </Button>
+
+            <Button type="button" variant="outline" className="w-full mt-2" onClick={handleGoogleLogin} disabled={isLoading}>
+              {t("loginWithGoogle")}
+            </Button>
+         
 
             <div className="text-center text-sm">
               {t("noAccount")}{" "}

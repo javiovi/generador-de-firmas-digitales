@@ -11,7 +11,9 @@ export const translations = {
 
     // Auth
     email: "Email",
+    emailPlaceholder: "your@email.com",
     password: "Password",
+    passwordPlaceholder: "••••••••",
     forgotPassword: "Forgot password?",
     loggingIn: "Logging in...",
     noAccount: "Don't have an account?",
@@ -20,11 +22,20 @@ export const translations = {
     registering: "Registering...",
     haveAccount: "Already have an account?",
     resetPassword: "Reset Password",
-    sendResetLink: "Send Reset Link",
+    sendReset: "Send Reset Link",
     sending: "Sending...",
     updatePassword: "Update Password",
     updating: "Updating...",
     redirecting: "Redirecting...", // New translation
+    backToLogin: "Back to Login",
+    "Change Language": "Language",
+    loginWithGoogle: "Sign in with Google",
+    registerTitle: "Create Account",
+    registerSubtitle: "Sign up to start creating and managing your email signatures",
+    resetTitle: "Reset Password",
+    resetSubtitle: "Enter your email to receive a reset link",
+    updatePasswordTitle: "Update Password",
+    updatePasswordSubtitle: "Create a new password for your account",
 
     // Home
     createProfessionalSignatures: "Create professional email signatures for your company in minutes",
@@ -154,9 +165,6 @@ export const translations = {
 htmlCodeCopied: "The signature HTML code has been copied to the clipboard.",
   },
 
-
-
-
   es: {
     // Navbar
     login: "Iniciar Sesión",
@@ -167,7 +175,9 @@ htmlCodeCopied: "The signature HTML code has been copied to the clipboard.",
 
     // Auth
     email: "Correo Electrónico",
+    emailPlaceholder: "tu@email.com",
     password: "Contraseña",
+    passwordPlaceholder: "••••••••",
     forgotPassword: "¿Olvidaste tu contraseña?",
     loggingIn: "Iniciando sesión...",
     noAccount: "¿No tienes una cuenta?",
@@ -176,11 +186,20 @@ htmlCodeCopied: "The signature HTML code has been copied to the clipboard.",
     registering: "Registrando...",
     haveAccount: "¿Ya tienes una cuenta?",
     resetPassword: "Restablecer Contraseña",
-    sendResetLink: "Enviar Enlace de Restablecimiento",
+    sendReset: "Enviar Enlace de Restablecimiento",
     sending: "Enviando...",
     updatePassword: "Actualizar Contraseña",
     updating: "Actualizando...",
     redirecting: "Redirigiendo...", // New translation
+    backToLogin: "Volver al Inicio de Sesión",
+    "Change Language": "Idioma",
+    loginWithGoogle: "Acceder con Google",
+    registerTitle: "Crear Cuenta",
+    registerSubtitle: "Regístrate para comenzar a crear y gestionar tus firmas de email",
+    resetTitle: "Restablecer Contraseña",
+    resetSubtitle: "Ingresa tu correo electrónico para recibir un enlace de restablecimiento",
+    updatePasswordTitle: "Actualizar Contraseña",
+    updatePasswordSubtitle: "Crea una nueva contraseña para tu cuenta",
 
     // Home
     createProfessionalSignatures: "Crea firmas de email profesionales para tu empresa en minutos",
@@ -308,7 +327,5 @@ htmlCodeCopied: "The signature HTML code has been copied to the clipboard.",
     ctaCreateFirstSignature: "Crear mi primera firma",
     codeCopied: "¡Código copiado!",
 htmlCodeCopied: "El código HTML de la firma se ha copiado al portapapeles.",
-
-
   },
 }

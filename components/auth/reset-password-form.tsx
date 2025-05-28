@@ -12,12 +12,14 @@ import { Card, CardContent } from "@/components/ui/card"
 import { toast } from "@/components/ui/use-toast"
 import { createBrowserSupabaseClient } from "@/lib/supabase"
 import { Loader2 } from "lucide-react"
+import { useLanguage } from "@/lib/i18n/language-context"
 
 export default function ResetPasswordForm() {
   const [email, setEmail] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const router = useRouter()
+  const { t, changeLanguage, language } = useLanguage()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -78,11 +80,11 @@ export default function ResetPasswordForm() {
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Correo Electrónico</Label>
+              <Label htmlFor="email">{t("email")}</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="tu@email.com"
+                placeholder={t("emailPlaceholder")}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -93,17 +95,36 @@ export default function ResetPasswordForm() {
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Enviando...
+                  {t("sending")}
                 </>
               ) : (
-                "Enviar Enlace de Restablecimiento"
+                t("sendReset")
               )}
             </Button>
 
-            <div className="text-center text-sm">
-              <Link href="/login" className="text-primary hover:underline">
-                Volver al Inicio de Sesión
+            <div className="text-center text-sm mt-2">
+              <Link href="/login" className="text-accent hover:underline">
+                {t("backToLogin")}
               </Link>
+            </div>
+            <div className="mt-4 flex justify-center">
+              <div className="flex items-center gap-2 text-sm text-gray-500">
+                <span>{t("Change Language")}:</span>
+                <button
+                  onClick={() => changeLanguage("es")}
+                  className={`flex items-center gap-1 rounded px-2 py-1 ${language === "es" ? "bg-rose-100 text-rose-600" : "hover:bg-gray-100"}`}
+                  type="button"
+                >
+                  🇪🇸 {t("spanish")}
+                </button>
+                <button
+                  onClick={() => changeLanguage("en")}
+                  className={`flex items-center gap-1 rounded px-2 py-1 ${language === "en" ? "bg-rose-100 text-rose-600" : "hover:bg-gray-100"}`}
+                  type="button"
+                >
+                  🇬🇧 {t("english")}
+                </button>
+              </div>
             </div>
           </form>
         )}

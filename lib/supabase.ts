@@ -31,15 +31,9 @@ export const createServerSupabaseClient = () => {
 }
 
 // Cliente para el navegador (singleton)
-let browserClient: ReturnType<typeof createBrowserSupabaseClient> | null = null
-
 export const createBrowserSupabaseClient = () => {
-  if (browserClient) return browserClient
-
-  browserClient = createClient<Database>(
+  return createClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
   )
-
-  return browserClient
 }

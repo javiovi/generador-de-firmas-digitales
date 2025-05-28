@@ -66,6 +66,10 @@ export default function ResetPasswordForm() {
   return (
     <Card>
       <CardContent className="pt-6">
+        <div className="text-center mb-6">
+          <h2 className="text-2xl font-bold text-text">{t("resetTitle")}</h2>
+          <p className="mt-2 text-gray-600">{t("resetSubtitle")}</p>
+        </div>
         {isSubmitted ? (
           <div className="text-center space-y-4">
             <h3 className="text-lg font-medium">Correo Enviado</h3>

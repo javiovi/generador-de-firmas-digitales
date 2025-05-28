@@ -97,7 +97,10 @@ export default function RegisterForm() {
 
   return (
     <div className="mx-auto w-full max-w-md rounded-lg bg-panel p-6 shadow-sm">
-      <h2 className="mb-6 text-center text-2xl font-bold text-text">{t("register")}</h2>
+      <div className="text-center mb-6">
+        <h2 className="text-2xl font-bold text-text">{t("registerTitle")}</h2>
+        <p className="mt-2 text-gray-600">{t("registerSubtitle")}</p>
+      </div>
       <Card>
         <CardContent className="pt-6">
           <form onSubmit={handleSubmit} className="space-y-4">

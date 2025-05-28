@@ -11,12 +11,14 @@ import { Card, CardContent } from "@/components/ui/card"
 import { toast } from "@/components/ui/use-toast"
 import { createBrowserSupabaseClient } from "@/lib/supabase"
 import { Loader2 } from "lucide-react"
+import { useLanguage } from "@/lib/i18n/language-context"
 
 export default function UpdatePasswordForm() {
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
+  const { t, changeLanguage, language } = useLanguage()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -81,6 +83,10 @@ export default function UpdatePasswordForm() {
   return (
     <Card>
       <CardContent className="pt-6">
+        <div className="text-center mb-6">
+          <h2 className="text-2xl font-bold text-text">{t("updatePasswordTitle")}</h2>
+          <p className="mt-2 text-gray-600">{t("updatePasswordSubtitle")}</p>
+        </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="password">Nueva Contraseña</Label>

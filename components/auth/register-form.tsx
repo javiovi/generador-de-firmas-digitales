@@ -65,7 +65,12 @@ export default function RegisterForm() {
       setIsLoading(true)
       const supabase = createBrowserSupabaseClient()
 
-      const { error } = await supabase.auth.signUp({
+      // Verificar que tenemos las variables de entorno
+      if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+        throw new Error("Configuración de Supabase no encontrada. Verifica las variables de entorno.")
+      }
+
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -74,20 +79,45 @@ export default function RegisterForm() {
       })
 
       if (error) {
+        console.error("Supabase error:", error)
         throw error
       }
 
-      toast({
-        title: "Registro exitoso",
-        description: "Se ha enviado un correo de confirmación a tu dirección de email",
-      })
+      if (data?.user && !data.user.email_confirmed_at) {
+        toast({
+          title: "Registro exitoso",
+          description: "Se ha enviado un correo de confirmación a tu dirección de email. Por favor, revisa tu bandeja de entrada.",
+        })
+      } else if (data?.user) {
+        toast({
+          title: "Registro exitoso",
+          description: "Tu cuenta ha sido creada exitosamente.",
+        })
+      }
 
       router.push("/login")
     } catch (error: any) {
-      console.error("Error de registro:", error)
+      console.error("Error de registro completo:", error)
+      
+      let errorMessage = "No se pudo completar el registro"
+      
+      if (error.message) {
+        if (error.message.includes("User already registered")) {
+          errorMessage = "Este email ya está registrado. Intenta iniciar sesión."
+        } else if (error.message.includes("Invalid email")) {
+          errorMessage = "El formato del email no es válido."
+        } else if (error.message.includes("Password")) {
+          errorMessage = "La contraseña no cumple con los requisitos mínimos."
+        } else if (error.message.includes("fetch")) {
+          errorMessage = "Error de conexión. Verifica tu conexión a internet e intenta de nuevo."
+        } else {
+          errorMessage = error.message
+        }
+      }
+      
       toast({
         title: "Error de registro",
-        description: error.message || "No se pudo completar el registro",
+        description: errorMessage,
         variant: "destructive",
       })
     } finally {

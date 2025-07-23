@@ -37,25 +37,72 @@ export default function LoginForm() {
       return
     }
 
-    // Validación local
-    if (email === "admin@rubrica.com" && password === "admin123") {
-      localStorage.setItem("isLoggedIn", "true")
-      console.log("isLoggedIn guardado en localStorage")
-      toast({
-        title: t("successLogin"),
-        description: t("successLoginMessage"),
+    try {
+      setIsLoading(true)
+      const supabase = createBrowserSupabaseClient()
+
+      // Intentar login con Supabase primero
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
       })
-      setTimeout(() => {
-        window.location.href = "/"
-      }, 500)
-      return
-    } else {
+
+      if (error) {
+        // Si falla, intentar con credenciales locales como fallback
+        if (email === "admin@rubrica.com" && password === "admin123") {
+          localStorage.setItem("isLoggedIn", "true")
+          console.log("isLoggedIn guardado en localStorage")
+          toast({
+            title: t("successLogin"),
+            description: t("successLoginMessage"),
+          })
+          setLoginSuccess(true)
+          setTimeout(() => {
+            window.location.href = "/dashboard"
+          }, 500)
+          return
+        } else {
+          throw error
+        }
+      }
+
+      // Login exitoso con Supabase
+      if (data?.user) {
+        localStorage.setItem("isLoggedIn", "true")
+        toast({
+          title: t("successLogin"),
+          description: t("successLoginMessage"),
+        })
+        setLoginSuccess(true)
+        setTimeout(() => {
+          window.location.href = "/dashboard"
+        }, 500)
+      }
+
+    } catch (error: any) {
+      console.error("Error de login:", error)
+      
+      let errorMessage = "Usuario o contraseña incorrectos."
+      
+      if (error.message) {
+        if (error.message.includes("Invalid login credentials")) {
+          errorMessage = "Email o contraseña incorrectos."
+        } else if (error.message.includes("Email not confirmed")) {
+          errorMessage = "Por favor, confirma tu email antes de iniciar sesión."
+        } else if (error.message.includes("fetch")) {
+          errorMessage = "Error de conexión. Verifica tu conexión a internet e intenta de nuevo."
+        } else {
+          errorMessage = error.message
+        }
+      }
+      
       toast({
         title: t("errorLogin"),
-        description: "Usuario o contraseña incorrectos.",
+        description: errorMessage,
         variant: "destructive",
       })
-      return
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -64,14 +111,35 @@ export default function LoginForm() {
   }
 
   const handleGoogleLogin = async () => {
-    const supabase = createBrowserSupabaseClient();
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/auth/callback` }
-    });
-    if (error) {
-      console.error("Error al iniciar sesión con Google:", error);
-      toast({ title: t("errorLogin"), description: "Error al iniciar sesión con Google.", variant: "destructive" });
+    try {
+      setIsLoading(true)
+      const supabase = createBrowserSupabaseClient();
+      
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { 
+          redirectTo: `${window.location.origin}/auth/callback`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          }
+        }
+      });
+      
+      if (error) {
+        console.error("Error al iniciar sesión con Google:", error);
+        throw error;
+      }
+      
+      // El usuario será redirigido automáticamente
+    } catch (error: any) {
+      console.error("Error completo de Google Auth:", error);
+      toast({ 
+        title: t("errorLogin"), 
+        description: error.message || "Error al iniciar sesión con Google. Verifica tu conexión e intenta de nuevo.", 
+        variant: "destructive" 
+      });
+      setIsLoading(false)
     }
   };
 

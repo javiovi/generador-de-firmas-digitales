@@ -70,11 +70,16 @@ export default function RegisterForm() {
         throw new Error("Configuración de Supabase no encontrada. Verifica las variables de entorno.")
       }
 
+      // Determinar la URL correcta para la redirección
+      const baseUrl = process.env.NODE_ENV === 'production' 
+        ? 'https://www.rubrica.ar' 
+        : window.location.origin;
+
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: `${baseUrl}/auth/callback`,
         },
       })
 

@@ -15,6 +15,15 @@ export async function GET(request: NextRequest) {
   // Si hay un error, redirigir al login con el error
   if (error) {
     console.error("Auth callback error:", error, error_description)
+    
+    // Manejo específico para errores de confirmación de email
+    if (error === "access_denied" && error_description?.includes("otp_expired")) {
+      const errorUrl = new URL("/login", requestUrl.origin)
+      errorUrl.searchParams.set("message", "email_link_expired")
+      errorUrl.searchParams.set("message_type", "warning")
+      return NextResponse.redirect(errorUrl)
+    }
+    
     const errorUrl = new URL("/login", requestUrl.origin)
     errorUrl.searchParams.set("error", error)
     if (error_description) {

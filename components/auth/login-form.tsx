@@ -25,6 +25,35 @@ export default function LoginForm() {
   const router = useRouter()
   const { t, changeLanguage, language } = useLanguage()
 
+  // Detectar mensajes de error/info de la URL
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search)
+      const message = urlParams.get("message")
+      const messageType = urlParams.get("message_type")
+      const error = urlParams.get("error")
+      const errorDescription = urlParams.get("error_description")
+
+      if (message === "email_link_expired") {
+        toast({
+          title: "Enlace expirado",
+          description: "El enlace de confirmación ha expirado. Tu cuenta fue creada correctamente, puedes iniciar sesión normalmente.",
+          variant: messageType === "warning" ? "default" : "destructive",
+        })
+        // Limpiar la URL
+        window.history.replaceState({}, document.title, window.location.pathname)
+      } else if (error) {
+        toast({
+          title: "Error de autenticación",
+          description: errorDescription || "Ocurrió un error durante la autenticación",
+          variant: "destructive",
+        })
+        // Limpiar la URL
+        window.history.replaceState({}, document.title, window.location.pathname)
+      }
+    }
+  }, [])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -115,10 +144,15 @@ export default function LoginForm() {
       setIsLoading(true)
       const supabase = createBrowserSupabaseClient();
       
+      // Determinar la URL correcta para la redirección
+      const baseUrl = process.env.NODE_ENV === 'production' 
+        ? 'https://www.rubrica.ar' 
+        : window.location.origin;
+      
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: { 
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: `${baseUrl}/auth/callback`,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',

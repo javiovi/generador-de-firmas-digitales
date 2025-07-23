@@ -162,7 +162,23 @@ export const translations = {
 
     ctaCreateFirstSignature: "Create my first signature",
     codeCopied: "Code copied!",
-htmlCodeCopied: "The signature HTML code has been copied to the clipboard.",
+    htmlCodeCopied: "The signature HTML code has been copied to the clipboard.",
+    
+    // Save/Load notifications
+    signatureSaved: "Signature saved",
+    signatureSavedSuccessfully: "Your signature has been saved successfully",
+    signatureLoaded: "Signature loaded",
+    signatureLoadedSuccessfully: "Your signature has been loaded successfully",
+    signatureDeleted: "Signature deleted",
+    signatureDeletedSuccessfully: "The signature has been deleted successfully",
+    saveError: "Save error",
+    saveSignatureFailed: "Failed to save signature",
+    loadError: "Load error", 
+    loadSignatureFailed: "Failed to load signature",
+    deleteError: "Delete error",
+    deleteSignatureFailed: "Failed to delete signature",
+    imageUploadError: "Upload error",
+    imageUploadFailed: "Failed to upload image",
   },
 
   es: {
@@ -326,6 +342,22 @@ htmlCodeCopied: "The signature HTML code has been copied to the clipboard.",
 
     ctaCreateFirstSignature: "Crear mi primera firma",
     codeCopied: "¡Código copiado!",
-htmlCodeCopied: "El código HTML de la firma se ha copiado al portapapeles.",
+    htmlCodeCopied: "El código HTML de la firma se ha copiado al portapapeles.",
+    
+    // Save/Load notifications
+    signatureSaved: "Firma guardada",
+    signatureSavedSuccessfully: "Tu firma se ha guardado exitosamente",
+    signatureLoaded: "Firma cargada",
+    signatureLoadedSuccessfully: "Tu firma se ha cargado exitosamente",
+    signatureDeleted: "Firma eliminada",
+    signatureDeletedSuccessfully: "La firma se ha eliminado exitosamente",
+    saveError: "Error al guardar",
+    saveSignatureFailed: "No se pudo guardar la firma",
+    loadError: "Error al cargar",
+    loadSignatureFailed: "No se pudo cargar la firma",  
+    deleteError: "Error al eliminar",
+    deleteSignatureFailed: "No se pudo eliminar la firma",
+    imageUploadError: "Error de subida",
+    imageUploadFailed: "No se pudo subir la imagen",
   },
 }
